@@ -95,7 +95,7 @@
                                       <EmptySpace min="-2" pref="17" max="-2" attributes="0"/>
                                       <Component id="jButton1" min="-2" pref="97" max="-2" attributes="0"/>
                                       <EmptySpace max="32767" attributes="0"/>
-                                      <Component id="jButton2" min="-2" pref="100" max="-2" attributes="0"/>
+                                      <Component id="ELIMINAR_RESIDENCIAL" min="-2" pref="100" max="-2" attributes="0"/>
                                       <EmptySpace min="-2" pref="77" max="-2" attributes="0"/>
                                   </Group>
                               </Group>
@@ -141,7 +141,7 @@
                               <EmptySpace max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="3" attributes="0">
                                   <Component id="jButton1" alignment="3" min="-2" pref="37" max="-2" attributes="0"/>
-                                  <Component id="jButton2" alignment="3" min="-2" pref="37" max="-2" attributes="0"/>
+                                  <Component id="ELIMINAR_RESIDENCIAL" alignment="3" min="-2" pref="37" max="-2" attributes="0"/>
                               </Group>
                               <EmptySpace max="32767" attributes="0"/>
                           </Group>
@@ -191,11 +191,17 @@
               <Properties>
                 <Property name="text" type="java.lang.String" value="EDITAR"/>
               </Properties>
+              <Events>
+                <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="jButton1MouseClicked"/>
+              </Events>
             </Component>
-            <Component class="javax.swing.JButton" name="jButton2">
+            <Component class="javax.swing.JButton" name="ELIMINAR_RESIDENCIAL">
               <Properties>
                 <Property name="text" type="java.lang.String" value="ELIMINAR"/>
               </Properties>
+              <Events>
+                <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="ELIMINAR_RESIDENCIALMouseClicked"/>
+              </Events>
             </Component>
             <Component class="javax.swing.JLabel" name="jLabel1">
               <Properties>
