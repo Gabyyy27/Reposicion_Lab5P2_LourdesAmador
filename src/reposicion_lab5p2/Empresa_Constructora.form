@@ -65,15 +65,15 @@
                                   <Group type="102" attributes="0">
                                       <Group type="103" groupAlignment="0" attributes="0">
                                           <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
-                                          <Component id="jTextField1" min="-2" pref="181" max="-2" attributes="0"/>
+                                          <Component id="Name_Residenciales" min="-2" pref="181" max="-2" attributes="0"/>
                                           <Component id="jLabel3" min="-2" max="-2" attributes="0"/>
                                           <Group type="102" attributes="0">
                                               <Group type="103" groupAlignment="0" attributes="0">
                                                   <Component id="jLabel2" alignment="0" min="-2" max="-2" attributes="0"/>
-                                                  <Component id="jYearChooser1" alignment="0" min="-2" pref="84" max="-2" attributes="0"/>
+                                                  <Component id="Año_Fundacion" alignment="0" min="-2" pref="84" max="-2" attributes="0"/>
                                               </Group>
                                               <EmptySpace min="-2" pref="58" max="-2" attributes="0"/>
-                                              <Component id="jButton3" min="-2" pref="97" max="-2" attributes="0"/>
+                                              <Component id="CREAR_RESIDENCIALES" min="-2" pref="97" max="-2" attributes="0"/>
                                           </Group>
                                       </Group>
                                       <EmptySpace pref="91" max="32767" attributes="0"/>
@@ -114,13 +114,13 @@
                               <EmptySpace type="separate" max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="1" attributes="0">
                                   <Group type="102" attributes="0">
-                                      <Component id="jTextField1" min="-2" max="-2" attributes="0"/>
+                                      <Component id="Name_Residenciales" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace min="-2" pref="43" max="-2" attributes="0"/>
                                       <Component id="jLabel2" min="-2" pref="14" max="-2" attributes="0"/>
                                       <EmptySpace type="separate" max="-2" attributes="0"/>
-                                      <Component id="jYearChooser1" min="-2" max="-2" attributes="0"/>
+                                      <Component id="Año_Fundacion" min="-2" max="-2" attributes="0"/>
                                   </Group>
-                                  <Component id="jButton3" min="-2" pref="40" max="-2" attributes="0"/>
+                                  <Component id="CREAR_RESIDENCIALES" min="-2" pref="40" max="-2" attributes="0"/>
                               </Group>
                               <EmptySpace min="-2" pref="48" max="-2" attributes="0"/>
                               <Component id="jLabel3" min="-2" max="-2" attributes="0"/>
@@ -158,7 +158,7 @@
 
               <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
               <SubComponents>
-                <Component class="javax.swing.JTable" name="jTable1">
+                <Component class="javax.swing.JTable" name="LISTA_RESIDENCIALES">
                   <Properties>
                     <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
                       <Table columnCount="2" rowCount="4">
@@ -202,19 +202,22 @@
                 <Property name="text" type="java.lang.String" value="Nombre"/>
               </Properties>
             </Component>
-            <Component class="javax.swing.JTextField" name="jTextField1">
+            <Component class="javax.swing.JTextField" name="Name_Residenciales">
             </Component>
             <Component class="javax.swing.JLabel" name="jLabel2">
               <Properties>
                 <Property name="text" type="java.lang.String" value="A&#xf1;o de fundacion"/>
               </Properties>
             </Component>
-            <Component class="com.toedter.calendar.JYearChooser" name="jYearChooser1">
+            <Component class="com.toedter.calendar.JYearChooser" name="A&#xf1;o_Fundacion">
             </Component>
-            <Component class="javax.swing.JButton" name="jButton3">
+            <Component class="javax.swing.JButton" name="CREAR_RESIDENCIALES">
               <Properties>
                 <Property name="text" type="java.lang.String" value="CREAR"/>
               </Properties>
+              <Events>
+                <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="CREAR_RESIDENCIALESMouseClicked"/>
+              </Events>
             </Component>
             <Container class="javax.swing.JScrollPane" name="jScrollPane2">
               <AuxValues>
@@ -1144,16 +1147,16 @@
                                               <Group type="102" alignment="0" attributes="0">
                                                   <Group type="103" groupAlignment="0" attributes="0">
                                                       <Component id="jLabel18" min="-2" max="-2" attributes="0"/>
-                                                      <Component id="jTextField10" min="-2" max="-2" attributes="0"/>
+                                                      <Component id="jSpinner2" min="-2" pref="62" max="-2" attributes="0"/>
                                                   </Group>
                                                   <EmptySpace min="-2" pref="31" max="-2" attributes="0"/>
-                                                  <Group type="103" groupAlignment="0" attributes="0">
-                                                      <Component id="jLabel19" min="-2" max="-2" attributes="0"/>
-                                                      <Component id="jTextField11" min="-2" max="-2" attributes="0"/>
+                                                  <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                                                      <Component id="jLabel19" max="32767" attributes="0"/>
+                                                      <Component id="jSpinner4" max="32767" attributes="0"/>
                                                   </Group>
                                               </Group>
                                           </Group>
-                                          <EmptySpace min="-2" pref="28" max="-2" attributes="0"/>
+                                          <EmptySpace min="-2" pref="35" max="-2" attributes="0"/>
                                           <Group type="103" groupAlignment="0" attributes="0">
                                               <Component id="jLabel34" alignment="0" min="-2" max="-2" attributes="0"/>
                                               <Component id="jScrollPane6" alignment="1" pref="186" max="32767" attributes="0"/>
@@ -1223,8 +1226,8 @@
                                           </Group>
                                           <EmptySpace type="separate" max="-2" attributes="0"/>
                                           <Group type="103" groupAlignment="3" attributes="0">
-                                              <Component id="jTextField10" alignment="3" min="-2" max="-2" attributes="0"/>
-                                              <Component id="jTextField11" alignment="3" min="-2" max="-2" attributes="0"/>
+                                              <Component id="jSpinner2" alignment="3" min="-2" max="-2" attributes="0"/>
+                                              <Component id="jSpinner4" alignment="3" min="-2" max="-2" attributes="0"/>
                                           </Group>
                                       </Group>
                                       <Group type="102" attributes="0">
@@ -1318,16 +1321,6 @@
                     <Property name="text" type="java.lang.String" value="(Comenzar su Codigo con NG)"/>
                   </Properties>
                 </Component>
-                <Component class="javax.swing.JTextField" name="jTextField10">
-                  <Properties>
-                    <Property name="text" type="java.lang.String" value="                      "/>
-                  </Properties>
-                </Component>
-                <Component class="javax.swing.JTextField" name="jTextField11">
-                  <Properties>
-                    <Property name="text" type="java.lang.String" value="                    "/>
-                  </Properties>
-                </Component>
                 <Component class="javax.swing.JLabel" name="jLabel34">
                   <Properties>
                     <Property name="text" type="java.lang.String" value="VILLAS"/>
@@ -1410,6 +1403,10 @@
                   <Properties>
                     <Property name="text" type="java.lang.String" value="ELIMINAR"/>
                   </Properties>
+                </Component>
+                <Component class="javax.swing.JSpinner" name="jSpinner2">
+                </Component>
+                <Component class="javax.swing.JSpinner" name="jSpinner4">
                 </Component>
               </SubComponents>
             </Container>
