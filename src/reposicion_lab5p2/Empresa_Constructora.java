@@ -9,7 +9,6 @@ import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
@@ -20,10 +19,8 @@ import javax.swing.table.DefaultTableModel;
 public class Empresa_Constructora extends javax.swing.JFrame {
 
     private List<String[]> data;
-    private List<Residencial> residencialesCreadas = new ArrayList<>();
-    private DefaultTableModel residencialModel;
 
-    private List<Residencial> residenciales = obtenerResidencialesCreadas();
+    private DefaultTableModel residencialModel;
 
     /**
      * Creates new form Empresa_Constructora
@@ -74,26 +71,7 @@ public class Empresa_Constructora extends javax.swing.JFrame {
                 }
             }
         });
-        // Obtén la lista de residenciales creadas por el usuario
-        List<Residencial> residenciales = obtenerResidencialesCreadas();
 
-        // Crea el JComboBox para las residenciales
-        JComboBox<String> comboBoxResidenciales = new JComboBox<>();
-
-        // Recorre la lista de residenciales y agrega los nombres al JComboBox
-        for (Residencial residencial : residenciales) {
-            comboBoxResidenciales.addItem(residencial.getNombre());
-        }
-
-    }
-
-    public void agregarResidencial(Residencial residencial) {
-        residencialesCreadas.add(residencial);
-    }
-
-    // Método ficticio para obtener las residenciales creadas
-    public List<Residencial> obtenerResidencialesCreadas() {
-        return residencialesCreadas;
     }
 
     /**
@@ -125,21 +103,21 @@ public class Empresa_Constructora extends javax.swing.JFrame {
         jLabel4 = new javax.swing.JLabel();
         VILLAS = new javax.swing.JPanel();
         jLabel5 = new javax.swing.JLabel();
-        jTextField2 = new javax.swing.JTextField();
+        NombreVilla = new javax.swing.JTextField();
         jLabel6 = new javax.swing.JLabel();
-        comboBoxResidenciales = new javax.swing.JComboBox<>();
         jLabel7 = new javax.swing.JLabel();
-        jSpinner1 = new javax.swing.JSpinner();
+        CapacidadLotes = new javax.swing.JSpinner();
         jLabel8 = new javax.swing.JLabel();
-        jComboBox2 = new javax.swing.JComboBox<>();
+        comboBoxSeguridad24Hr = new javax.swing.JComboBox<>();
         jScrollPane4 = new javax.swing.JScrollPane();
-        jTable2 = new javax.swing.JTable();
+        Tabla_Villas = new javax.swing.JTable();
         jLabel9 = new javax.swing.JLabel();
         jScrollPane5 = new javax.swing.JScrollPane();
         jList3 = new javax.swing.JList<>();
         jButton4 = new javax.swing.JButton();
         jButton5 = new javax.swing.JButton();
-        jButton6 = new javax.swing.JButton();
+        CREAR_VILLA = new javax.swing.JButton();
+        ResidencialPertenencia = new javax.swing.JTextField();
         LOTES = new javax.swing.JTabbedPane();
         jTabbedPane2 = new javax.swing.JTabbedPane();
         jPanel1 = new javax.swing.JPanel();
@@ -373,15 +351,12 @@ public class Empresa_Constructora extends javax.swing.JFrame {
 
         jLabel8.setText("Seguridad 24 Hrs");
 
-        jComboBox2.setMaximumRowCount(2);
-        jComboBox2.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "SI", "NO" }));
+        comboBoxSeguridad24Hr.setMaximumRowCount(2);
+        comboBoxSeguridad24Hr.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "SI", "NO" }));
 
-        jTable2.setModel(new javax.swing.table.DefaultTableModel(
+        Tabla_Villas.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+
             },
             new String [] {
                 "NOMBRE", "RESIDENCIAL DE P.", "CAPACIDAD LOTES", "SEGURIDAD 24 Hrs"
@@ -402,13 +377,7 @@ public class Empresa_Constructora extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
-        jScrollPane4.setViewportView(jTable2);
-        if (jTable2.getColumnModel().getColumnCount() > 0) {
-            jTable2.getColumnModel().getColumn(0).setResizable(false);
-            jTable2.getColumnModel().getColumn(1).setResizable(false);
-            jTable2.getColumnModel().getColumn(2).setResizable(false);
-            jTable2.getColumnModel().getColumn(3).setResizable(false);
-        }
+        jScrollPane4.setViewportView(Tabla_Villas);
 
         jLabel9.setText("RESIDENCIALES");
 
@@ -419,10 +388,10 @@ public class Empresa_Constructora extends javax.swing.JFrame {
 
         jButton5.setText("ELIMINAR");
 
-        jButton6.setText("CREAR");
-        jButton6.addMouseListener(new java.awt.event.MouseAdapter() {
+        CREAR_VILLA.setText("CREAR");
+        CREAR_VILLA.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jButton6MouseClicked(evt);
+                CREAR_VILLAMouseClicked(evt);
             }
         });
 
@@ -436,24 +405,25 @@ public class Empresa_Constructora extends javax.swing.JFrame {
                     .addGroup(VILLASLayout.createSequentialGroup()
                         .addGroup(VILLASLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(VILLASLayout.createSequentialGroup()
-                                .addGroup(VILLASLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(jLabel7)
-                                    .addComponent(jLabel6)
-                                    .addComponent(jLabel5)
-                                    .addComponent(jTextField2, javax.swing.GroupLayout.DEFAULT_SIZE, 181, Short.MAX_VALUE)
-                                    .addComponent(comboBoxResidenciales, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(jSpinner1, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
+                                .addGroup(VILLASLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(VILLASLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                        .addComponent(jLabel7)
+                                        .addComponent(jLabel6)
+                                        .addComponent(jLabel5)
+                                        .addComponent(NombreVilla, javax.swing.GroupLayout.DEFAULT_SIZE, 181, Short.MAX_VALUE)
+                                        .addComponent(CapacidadLotes, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
+                                    .addComponent(ResidencialPertenencia, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addGap(100, 100, 100)
                                 .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 440, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addComponent(jLabel9))
                         .addContainerGap(45, Short.MAX_VALUE))
                     .addGroup(VILLASLayout.createSequentialGroup()
                         .addGroup(VILLASLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(jComboBox2, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(comboBoxSeguridad24Hr, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(jLabel8, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addGap(37, 37, 37)
-                        .addComponent(jButton6, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(CREAR_VILLA, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(118, 118, 118)
                         .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -468,29 +438,29 @@ public class Empresa_Constructora extends javax.swing.JFrame {
                     .addGroup(VILLASLayout.createSequentialGroup()
                         .addComponent(jLabel5)
                         .addGap(18, 18, 18)
-                        .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(NombreVilla, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(26, 26, 26)
                         .addComponent(jLabel6)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(comboBoxResidenciales, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(29, 29, 29)
+                        .addGap(18, 18, 18)
+                        .addComponent(ResidencialPertenencia, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(22, 22, 22)
                         .addComponent(jLabel7)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jSpinner1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(CapacidadLotes, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 189, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addComponent(jLabel8)
                 .addGap(18, 18, 18)
                 .addGroup(VILLASLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(VILLASLayout.createSequentialGroup()
-                        .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(comboBoxSeguridad24Hr, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 52, Short.MAX_VALUE)
                         .addGroup(VILLASLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(11, 11, 11))
                     .addGroup(VILLASLayout.createSequentialGroup()
-                        .addComponent(jButton6, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(CREAR_VILLA, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addComponent(jLabel9)
                 .addGap(18, 18, 18)
@@ -561,12 +531,6 @@ public class Empresa_Constructora extends javax.swing.JFrame {
             }
         });
         jScrollPane9.setViewportView(jTable3);
-        if (jTable3.getColumnModel().getColumnCount() > 0) {
-            jTable3.getColumnModel().getColumn(0).setResizable(false);
-            jTable3.getColumnModel().getColumn(1).setResizable(false);
-            jTable3.getColumnModel().getColumn(2).setResizable(false);
-            jTable3.getColumnModel().getColumn(3).setResizable(false);
-        }
 
         jButton7.setText("CREAR");
         jButton7.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -750,12 +714,6 @@ public class Empresa_Constructora extends javax.swing.JFrame {
             }
         });
         jScrollPane10.setViewportView(jTable4);
-        if (jTable4.getColumnModel().getColumnCount() > 0) {
-            jTable4.getColumnModel().getColumn(0).setResizable(false);
-            jTable4.getColumnModel().getColumn(1).setResizable(false);
-            jTable4.getColumnModel().getColumn(2).setResizable(false);
-            jTable4.getColumnModel().getColumn(3).setResizable(false);
-        }
 
         jButton10.setText("EDITAR");
 
@@ -912,12 +870,6 @@ public class Empresa_Constructora extends javax.swing.JFrame {
             }
         });
         jScrollPane11.setViewportView(jTable5);
-        if (jTable5.getColumnModel().getColumnCount() > 0) {
-            jTable5.getColumnModel().getColumn(0).setResizable(false);
-            jTable5.getColumnModel().getColumn(1).setResizable(false);
-            jTable5.getColumnModel().getColumn(2).setResizable(false);
-            jTable5.getColumnModel().getColumn(3).setResizable(false);
-        }
 
         jButton12.setText("EDITAR");
 
@@ -1066,6 +1018,13 @@ public class Empresa_Constructora extends javax.swing.JFrame {
         // TODO add your handling code here:
         Residencial r = new Residencial((String) Name_Residenciales.getText(), (Integer) Año_Fundacion.getValue());
         residencial.add(r);
+        String nombreResidecial = Name_Residenciales.getText();
+
+        // Validar que se haya ingresado un nombre de residecial
+        if (nombreResidecial.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Ingrese el nombre de la Residencial", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
         JOptionPane.showMessageDialog(this, "Creado Exitosamente!");
 
         int Año = (Integer) Año_Fundacion.getValue();
@@ -1100,6 +1059,21 @@ public class Empresa_Constructora extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_ELIMINAR_RESIDENCIALMouseClicked
 
+    private Villa getVillaSeleccionada() {
+        int filaSeleccionada = Tabla_Villas.getSelectedRow();
+        if (filaSeleccionada != -1) {
+            String nombreResidencial = (String) Tabla_Villas.getValueAt(filaSeleccionada, 0);
+            // Aquí debes obtener el resto de los valores de la villa (capacidad de lotes y seguridad 24 hrs)
+            // Puedes utilizar los métodos getValueAt() para obtener los valores de las otras columnas
+            int capacidadLotes = (int) Tabla_Villas.getValueAt(filaSeleccionada, 1);
+            boolean seguridad24Hrs = (boolean) Tabla_Villas.getValueAt(filaSeleccionada, 2);
+
+            // Crear y devolver el objeto de la villa seleccionada
+            return new Villa(nombreResidencial, capacidadLotes, seguridad24Hrs);
+        }
+        return null;
+    }
+
     // Método para obtener la residencial seleccionada de la tabla
     private Residencial getResidencialSeleccionada() {
         int filaSeleccionada = LISTA_RESIDENCIALES.getSelectedRow();
@@ -1117,30 +1091,61 @@ public class Empresa_Constructora extends javax.swing.JFrame {
         }
         return null;
     }
-    private void jButton6MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton6MouseClicked
-        // TODO add your handling code here:
+    // Método para validar si el nombre de residencial ingresado es válido
 
-        // TODO add your handling code here:
-        Residencial r = new Residencial((String) Name_Residenciales.getText(), (Integer) Año_Fundacion.getValue());
-        residencial.add(r);
-        JOptionPane.showMessageDialog(this, "Creado Exitosamente!");
+    private boolean esResidencialExistente(String nombreResidencial) {
+        // Aquí debes implementar la lógica para comprobar si el nombre de residencial existe
+        // Puedes utilizar una lista o una estructura de datos para almacenar los nombres de las residenciales existentes
+        // y luego verificar si el nombre ingresado está en esa lista
 
-        int Año = (Integer) Año_Fundacion.getValue();
-        String Nombre_Residencial = Name_Residenciales.getText();
+        // Ejemplo de validación
+        for (Residencial r : residencial) {
+            if (r.getNombre().equals(nombreResidencial)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    private void CREAR_VILLAMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_CREAR_VILLAMouseClicked
+        // Obtener los valores ingresados por el usuario
+        String nombreVilla = NombreVilla.getText();
+        String residencialPertenencia = ResidencialPertenencia.getText();
+        int capacidadLotes = (int) CapacidadLotes.getValue();
+        String seguridad24Hr = comboBoxSeguridad24Hr.getSelectedItem().toString();
 
-        // Crea una lista para almacenar los datos ingresados
-        data = new ArrayList<>();
-        // Agrega los datos a la lista
-        String[] rowData = {String.valueOf(Nombre_Residencial), String.valueOf(Año)};
-        data.add(rowData);
+        // Validar que se haya ingresado un nombre de villa
+        if (nombreVilla.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Ingrese el nombre de la villa", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
 
-        // Agrega los datos a la tabla
-        residencialModel.addRow(rowData);
+        // Validar que se haya ingresado un nombre de residencial
+        if (residencialPertenencia.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Ingrese el nombre de la residencial de pertenencia", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        // Validar que el nombre de residencial ingresado sea válido
+        if (!esResidencialExistente(residencialPertenencia)) {
+            JOptionPane.showMessageDialog(this, "El nombre de residencial ingresado no existe", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
 
-        // Limpia los campos de texto después de guardar los datos
-        Name_Residenciales.setText("  ");
+        // Crear la villa con los valores ingresados
+        Villa villa = new Villa(nombreVilla, residencialPertenencia, capacidadLotes, seguridad24Hr);
 
-    }//GEN-LAST:event_jButton6MouseClicked
+        DefaultTableModel model = (DefaultTableModel) Tabla_Villas.getModel();
+        model.addRow(new Object[]{villa.getNombre(), villa.getResidencial(), villa.getCapacidadLotes(), villa.getSeguridad24Horas()});
+
+        // Mostrar mensaje de éxito
+        JOptionPane.showMessageDialog(this, "Villa creada exitosamente");
+
+        // Limpiar los campos de entrada
+        NombreVilla.setText("");
+        ResidencialPertenencia.setText("");
+        CapacidadLotes.setValue(0);
+        comboBoxSeguridad24Hr.setSelectedIndex(0);
+
+    }//GEN-LAST:event_CREAR_VILLAMouseClicked
 
     private void jButton7MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton7MouseClicked
         // TODO add your handling code here:
@@ -1251,26 +1256,29 @@ public class Empresa_Constructora extends javax.swing.JFrame {
     private javax.swing.JButton COLOR_LOTES2;
     private javax.swing.JButton COLOR_LOTES3;
     private javax.swing.JButton CREAR_RESIDENCIALES;
+    private javax.swing.JButton CREAR_VILLA;
+    private javax.swing.JSpinner CapacidadLotes;
     private javax.swing.JButton EDITAR_RESIDENCIALES;
     private javax.swing.JButton ELIMINAR_RESIDENCIAL;
     private javax.swing.JTable LISTA_RESIDENCIALES;
     private javax.swing.JTabbedPane LOTES;
     private javax.swing.JTextField Name_Residenciales;
+    private javax.swing.JTextField NombreVilla;
     private javax.swing.JPanel RESIDENCIALES;
+    private javax.swing.JTextField ResidencialPertenencia;
+    private javax.swing.JTable Tabla_Villas;
     private javax.swing.JPanel VILLAS;
     private javax.swing.ButtonGroup buttonGroup1;
-    private javax.swing.JComboBox<String> comboBoxResidenciales;
+    private javax.swing.JComboBox<String> comboBoxSeguridad24Hr;
     private javax.swing.JButton jButton10;
     private javax.swing.JButton jButton11;
     private javax.swing.JButton jButton12;
     private javax.swing.JButton jButton13;
     private javax.swing.JButton jButton4;
     private javax.swing.JButton jButton5;
-    private javax.swing.JButton jButton6;
     private javax.swing.JButton jButton7;
     private javax.swing.JButton jButton8;
     private javax.swing.JButton jButton9;
-    private javax.swing.JComboBox<String> jComboBox2;
     private javax.swing.JComboBox<String> jComboBox5;
     private javax.swing.JComboBox<String> jComboBox6;
     private javax.swing.JComboBox<String> jComboBox7;
@@ -1326,7 +1334,6 @@ public class Empresa_Constructora extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane7;
     private javax.swing.JScrollPane jScrollPane8;
     private javax.swing.JScrollPane jScrollPane9;
-    private javax.swing.JSpinner jSpinner1;
     private javax.swing.JSpinner jSpinner10;
     private javax.swing.JSpinner jSpinner2;
     private javax.swing.JSpinner jSpinner3;
@@ -1337,11 +1344,9 @@ public class Empresa_Constructora extends javax.swing.JFrame {
     private javax.swing.JSpinner jSpinner9;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JTabbedPane jTabbedPane2;
-    private javax.swing.JTable jTable2;
     private javax.swing.JTable jTable3;
     private javax.swing.JTable jTable4;
     private javax.swing.JTable jTable5;
-    private javax.swing.JTextField jTextField2;
     private javax.swing.JTextField jTextField4;
     private javax.swing.JTextField jTextField5;
     private javax.swing.JTextField jTextField6;
