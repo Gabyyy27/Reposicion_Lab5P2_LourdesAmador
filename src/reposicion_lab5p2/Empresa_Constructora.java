@@ -25,15 +25,20 @@ public class Empresa_Constructora extends javax.swing.JFrame {
     public Empresa_Constructora() {
         initComponents();
         
+      
         residencialModel = new DefaultTableModel();
-
-        // Configurar las columnas de la tabla
         residencialModel.addColumn("NOMBRE");
         residencialModel.addColumn("AÑO DE FUNDACION");
-        
-        LISTA_RESIDENCIALES.setModel(residencialModel);
-       
 
+        // Crear la lista de datos y agregar algunos datos de ejemplo
+        data = new ArrayList<>();
+        
+        // Agregar los datos al modelo de la tabla
+        for (String[] row : data) {
+            residencialModel.addRow(row);
+        }
+
+        LISTA_RESIDENCIALES.setModel(residencialModel);
     }
 
     /**
@@ -164,18 +169,12 @@ public class Empresa_Constructora extends javax.swing.JFrame {
             Class[] types = new Class [] {
                 java.lang.String.class, java.lang.Integer.class
             };
-            boolean[] canEdit = new boolean [] {
-                false, false
-            };
 
             public Class getColumnClass(int columnIndex) {
                 return types [columnIndex];
             }
-
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return canEdit [columnIndex];
-            }
         });
+        LISTA_RESIDENCIALES.setSelectionBackground(new java.awt.Color(0, 204, 51));
         jScrollPane1.setViewportView(LISTA_RESIDENCIALES);
         if (LISTA_RESIDENCIALES.getColumnModel().getColumnCount() > 0) {
             LISTA_RESIDENCIALES.getColumnModel().getColumn(0).setResizable(false);
@@ -351,6 +350,11 @@ public class Empresa_Constructora extends javax.swing.JFrame {
         jButton5.setText("ELIMINAR");
 
         jButton6.setText("CREAR");
+        jButton6.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jButton6MouseClicked(evt);
+            }
+        });
 
         javax.swing.GroupLayout VILLASLayout = new javax.swing.GroupLayout(VILLAS);
         VILLAS.setLayout(VILLASLayout);
@@ -495,6 +499,11 @@ public class Empresa_Constructora extends javax.swing.JFrame {
         }
 
         jButton7.setText("CREAR");
+        jButton7.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jButton7MouseClicked(evt);
+            }
+        });
 
         jButton8.setText("ELIMINAR");
 
@@ -1045,6 +1054,55 @@ public class Empresa_Constructora extends javax.swing.JFrame {
 
         }
     }//GEN-LAST:event_jButton1MouseClicked
+
+    private void jButton6MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton6MouseClicked
+        // TODO add your handling code here:
+        
+        // TODO add your handling code here:
+        Residencial r = new Residencial((String)Name_Residenciales.getText(), (Integer )Año_Fundacion.getValue());
+        residencial.add(r);
+        JOptionPane.showMessageDialog(this, "Creado Exitosamente!");
+        
+        int Año = (Integer) Año_Fundacion.getValue();
+        String Nombre_Residencial = Name_Residenciales.getText();
+        
+        // Crea una lista para almacenar los datos ingresados
+        data = new ArrayList<>();
+        // Agrega los datos a la lista
+        String[] rowData = {String.valueOf(Nombre_Residencial), String.valueOf(Año)};
+        data.add(rowData);
+
+        // Agrega los datos a la tabla
+        residencialModel.addRow(rowData);
+
+        // Limpia los campos de texto después de guardar los datos
+        Name_Residenciales.setText("  ");
+
+    }//GEN-LAST:event_jButton6MouseClicked
+
+    private void jButton7MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton7MouseClicked
+        // TODO add your handling code here:
+        // TODO add your handling code here:
+        Residencial r = new Residencial((String)Name_Residenciales.getText(), (Integer )Año_Fundacion.getValue());
+        residencial.add(r);
+        JOptionPane.showMessageDialog(this, "Creado Exitosamente!");
+        
+        int Año = (Integer) Año_Fundacion.getValue();
+        String Nombre_Residencial = Name_Residenciales.getText();
+        
+        // Crea una lista para almacenar los datos ingresados
+        data = new ArrayList<>();
+        // Agrega los datos a la lista
+        String[] rowData = {String.valueOf(Nombre_Residencial), String.valueOf(Año)};
+        data.add(rowData);
+
+        // Agrega los datos a la tabla
+        residencialModel.addRow(rowData);
+
+        // Limpia los campos de texto después de guardar los datos
+        Name_Residenciales.setText("  ");
+
+    }//GEN-LAST:event_jButton7MouseClicked
 
     /**
      * @param args the command line arguments
