@@ -5,11 +5,13 @@
  */
 package reposicion_lab5p2;
 
+import java.awt.event.KeyEvent;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
+import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
-
 
 /**
  *
@@ -18,27 +20,80 @@ import javax.swing.table.DefaultTableModel;
 public class Empresa_Constructora extends javax.swing.JFrame {
 
     private List<String[]> data;
+    private List<Residencial> residencialesCreadas = new ArrayList<>();
     private DefaultTableModel residencialModel;
+
+    private List<Residencial> residenciales = obtenerResidencialesCreadas();
+
     /**
      * Creates new form Empresa_Constructora
      */
     public Empresa_Constructora() {
         initComponents();
-        
-      
+
         residencialModel = new DefaultTableModel();
         residencialModel.addColumn("NOMBRE");
         residencialModel.addColumn("AÑO DE FUNDACION");
 
         // Crear la lista de datos y agregar algunos datos de ejemplo
         data = new ArrayList<>();
-        
+
         // Agregar los datos al modelo de la tabla
         for (String[] row : data) {
             residencialModel.addRow(row);
         }
 
         LISTA_RESIDENCIALES.setModel(residencialModel);
+        // Configurar el KeyListener para el campo de edición
+        Name_Residenciales.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+                    // Obtener la residencial seleccionada
+                    Residencial residencial = getResidencialSeleccionada();
+                    if (residencial != null) {
+                        // Obtener los nuevos valores editados
+                        String nuevoNombre = Name_Residenciales.getText();
+                        int nuevoAnioFundacion = Año_Fundacion.getYear();
+
+                        // Actualizar los valores en la tabla y en el objeto de la residencial
+                        int filaSeleccionada = LISTA_RESIDENCIALES.getSelectedRow();
+                        residencialModel.setValueAt(nuevoNombre, filaSeleccionada, 0);
+                        residencialModel.setValueAt(nuevoAnioFundacion, filaSeleccionada, 1);
+                        residencial.setNombre(nuevoNombre);
+                        residencial.setAñoFundacion(nuevoAnioFundacion);
+
+                        // Limpiar los campos de edición
+                        Name_Residenciales.setText("");
+                        Año_Fundacion.setYear(Calendar.getInstance().get(Calendar.YEAR));
+
+                        // Mostrar mensaje de éxito
+                        JOptionPane.showMessageDialog(null, "Residencial editada exitosamente");
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Selecciona una fila para editar", "Error", JOptionPane.ERROR_MESSAGE);
+                    }
+                }
+            }
+        });
+        // Obtén la lista de residenciales creadas por el usuario
+        List<Residencial> residenciales = obtenerResidencialesCreadas();
+
+        // Crea el JComboBox para las residenciales
+        JComboBox<String> comboBoxResidenciales = new JComboBox<>();
+
+        // Recorre la lista de residenciales y agrega los nombres al JComboBox
+        for (Residencial residencial : residenciales) {
+            comboBoxResidenciales.addItem(residencial.getNombre());
+        }
+
+    }
+
+    public void agregarResidencial(Residencial residencial) {
+        residencialesCreadas.add(residencial);
+    }
+
+    // Método ficticio para obtener las residenciales creadas
+    public List<Residencial> obtenerResidencialesCreadas() {
+        return residencialesCreadas;
     }
 
     /**
@@ -55,7 +110,7 @@ public class Empresa_Constructora extends javax.swing.JFrame {
         RESIDENCIALES = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         LISTA_RESIDENCIALES = new javax.swing.JTable();
-        jButton1 = new javax.swing.JButton();
+        EDITAR_RESIDENCIALES = new javax.swing.JButton();
         ELIMINAR_RESIDENCIAL = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
         Name_Residenciales = new javax.swing.JTextField();
@@ -72,7 +127,7 @@ public class Empresa_Constructora extends javax.swing.JFrame {
         jLabel5 = new javax.swing.JLabel();
         jTextField2 = new javax.swing.JTextField();
         jLabel6 = new javax.swing.JLabel();
-        jComboBox1 = new javax.swing.JComboBox<>();
+        comboBoxResidenciales = new javax.swing.JComboBox<>();
         jLabel7 = new javax.swing.JLabel();
         jSpinner1 = new javax.swing.JSpinner();
         jLabel8 = new javax.swing.JLabel();
@@ -181,10 +236,15 @@ public class Empresa_Constructora extends javax.swing.JFrame {
             LISTA_RESIDENCIALES.getColumnModel().getColumn(1).setResizable(false);
         }
 
-        jButton1.setText("EDITAR");
-        jButton1.addMouseListener(new java.awt.event.MouseAdapter() {
+        EDITAR_RESIDENCIALES.setText("EDITAR");
+        EDITAR_RESIDENCIALES.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jButton1MouseClicked(evt);
+                EDITAR_RESIDENCIALESMouseClicked(evt);
+            }
+        });
+        EDITAR_RESIDENCIALES.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                EDITAR_RESIDENCIALESKeyPressed(evt);
             }
         });
 
@@ -197,7 +257,19 @@ public class Empresa_Constructora extends javax.swing.JFrame {
 
         jLabel1.setText("Nombre");
 
+        Name_Residenciales.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                Name_ResidencialesKeyPressed(evt);
+            }
+        });
+
         jLabel2.setText("Año de fundacion");
+
+        Año_Fundacion.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                Año_FundacionKeyPressed(evt);
+            }
+        });
 
         CREAR_RESIDENCIALES.setText("CREAR");
         CREAR_RESIDENCIALES.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -250,7 +322,7 @@ public class Empresa_Constructora extends javax.swing.JFrame {
                                 .addGap(51, 51, 51))
                             .addGroup(RESIDENCIALESLayout.createSequentialGroup()
                                 .addGap(17, 17, 17)
-                                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(EDITAR_RESIDENCIALES, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(ELIMINAR_RESIDENCIAL, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(77, 77, 77))))))
@@ -266,7 +338,7 @@ public class Empresa_Constructora extends javax.swing.JFrame {
                         .addGroup(RESIDENCIALESLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addGroup(RESIDENCIALESLayout.createSequentialGroup()
                                 .addComponent(Name_Residenciales, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(43, 43, 43)
+                                .addGap(61, 61, 61)
                                 .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 14, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(18, 18, 18)
                                 .addComponent(Año_Fundacion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -282,11 +354,11 @@ public class Empresa_Constructora extends javax.swing.JFrame {
                     .addGroup(RESIDENCIALESLayout.createSequentialGroup()
                         .addGap(18, 18, 18)
                         .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 48, Short.MAX_VALUE))
+                        .addGap(0, 63, Short.MAX_VALUE))
                     .addGroup(RESIDENCIALESLayout.createSequentialGroup()
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(RESIDENCIALESLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(EDITAR_RESIDENCIALES, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(ELIMINAR_RESIDENCIAL, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
@@ -296,8 +368,6 @@ public class Empresa_Constructora extends javax.swing.JFrame {
         jLabel5.setText("Nombre");
 
         jLabel6.setText("Residencial de Pertenencia");
-
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
         jLabel7.setText("Capacidad de Lotes Totales");
 
@@ -371,7 +441,7 @@ public class Empresa_Constructora extends javax.swing.JFrame {
                                     .addComponent(jLabel6)
                                     .addComponent(jLabel5)
                                     .addComponent(jTextField2, javax.swing.GroupLayout.DEFAULT_SIZE, 181, Short.MAX_VALUE)
-                                    .addComponent(jComboBox1, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(comboBoxResidenciales, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                     .addComponent(jSpinner1, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
                                 .addGap(100, 100, 100)
@@ -402,7 +472,7 @@ public class Empresa_Constructora extends javax.swing.JFrame {
                         .addGap(26, 26, 26)
                         .addComponent(jLabel6)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(comboBoxResidenciales, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(29, 29, 29)
                         .addComponent(jLabel7)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -414,7 +484,7 @@ public class Empresa_Constructora extends javax.swing.JFrame {
                 .addGroup(VILLASLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(VILLASLayout.createSequentialGroup()
                         .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 19, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 52, Short.MAX_VALUE)
                         .addGroup(VILLASLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -774,7 +844,7 @@ public class Empresa_Constructora extends javax.swing.JFrame {
                         .addComponent(jLabel35)
                         .addGap(18, 18, 18)
                         .addComponent(jScrollPane7, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(20, Short.MAX_VALUE))
+                .addContainerGap(53, Short.MAX_VALUE))
         );
 
         jTabbedPane2.addTab("CASAS", jPanel4);
@@ -947,7 +1017,7 @@ public class Empresa_Constructora extends javax.swing.JFrame {
                         .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jButton13, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jButton12, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addContainerGap(13, Short.MAX_VALUE))
+                .addContainerGap(46, Short.MAX_VALUE))
         );
 
         LOTES.addTab("NEGOCIOS", jPanel2);
@@ -994,13 +1064,13 @@ public class Empresa_Constructora extends javax.swing.JFrame {
 
     private void CREAR_RESIDENCIALESMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_CREAR_RESIDENCIALESMouseClicked
         // TODO add your handling code here:
-        Residencial r = new Residencial((String)Name_Residenciales.getText(), (Integer )Año_Fundacion.getValue());
+        Residencial r = new Residencial((String) Name_Residenciales.getText(), (Integer) Año_Fundacion.getValue());
         residencial.add(r);
         JOptionPane.showMessageDialog(this, "Creado Exitosamente!");
-        
+
         int Año = (Integer) Año_Fundacion.getValue();
         String Nombre_Residencial = Name_Residenciales.getText();
-        
+
         // Crea una lista para almacenar los datos ingresados
         data = new ArrayList<>();
         // Agrega los datos a la lista
@@ -1013,59 +1083,51 @@ public class Empresa_Constructora extends javax.swing.JFrame {
         // Limpia los campos de texto después de guardar los datos
         Name_Residenciales.setText("  ");
 
-        
-        
+
     }//GEN-LAST:event_CREAR_RESIDENCIALESMouseClicked
 
     private void ELIMINAR_RESIDENCIALMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ELIMINAR_RESIDENCIALMouseClicked
-        // TODO add your handling code here:
-        int selectedRow = LISTA_RESIDENCIALES.getSelectedRow();
-        if (selectedRow != -1) {
-            // Confirmar eliminación con un mensaje de diálogo
-            int confirm = JOptionPane.showConfirmDialog(null, "¿Estás seguro de eliminar esta Residecial?", "Confirmar eliminación", JOptionPane.YES_NO_OPTION);
+        int filaSeleccionada = LISTA_RESIDENCIALES.getSelectedRow();
+        if (filaSeleccionada != -1) {
+            int confirm = JOptionPane.showConfirmDialog(this, "¿Estás seguro de eliminar esta Residencial?", "Confirmar eliminación", JOptionPane.YES_NO_OPTION);
             if (confirm == JOptionPane.YES_OPTION) {
-                // Eliminar la fila seleccionada de la lista y de la tabla
-                data.remove(selectedRow);
-                residencialModel.removeRow(selectedRow);
-
-                // Mostrar mensaje de éxito
-                JOptionPane.showMessageDialog(null, "Residencial eliminada exitosamente");
+                residencialModel.removeRow(filaSeleccionada);
+                residencial.remove(filaSeleccionada);
+                JOptionPane.showMessageDialog(this, "Residencial eliminada exitosamente");
             }
         } else {
-            JOptionPane.showMessageDialog(null, "Selecciona una fila para eliminar", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Selecciona una fila para eliminar", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_ELIMINAR_RESIDENCIALMouseClicked
 
-    private void jButton1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton1MouseClicked
-      
-        int selectedRow = LISTA_RESIDENCIALES.getSelectedRow();
-        if (selectedRow != -1) {
-            // Obtén los valores de la fila seleccionada
-            String NOMBRE = (String) residencialModel.getValueAt(selectedRow, 0);
-            int AÑO = (int) residencialModel.getValueAt(selectedRow, 1);
-            
+    // Método para obtener la residencial seleccionada de la tabla
+    private Residencial getResidencialSeleccionada() {
+        int filaSeleccionada = LISTA_RESIDENCIALES.getSelectedRow();
+        if (filaSeleccionada != -1) {
+            // Obtener los valores de la fila seleccionada en la tabla
+            String nombre = residencialModel.getValueAt(filaSeleccionada, 0).toString();
+            int anioFundacion = Integer.parseInt(residencialModel.getValueAt(filaSeleccionada, 1).toString());
 
-            // Mostrar los valores en los campos de edición correspondientes
-            Name_Residenciales.setText(NOMBRE);
-            Año_Fundacion.setValue(AÑO);
-            
-        } else {
-            JOptionPane.showMessageDialog(null, "Selecciona una Residencial para Editar", "Error", JOptionPane.ERROR_MESSAGE);
-
+            // Buscar la residencial en la lista según los valores obtenidos
+            for (Residencial residencial : residencial) {
+                if (residencial.getNombre().equals(nombre) && residencial.getAñoFundacion() == anioFundacion) {
+                    return residencial;
+                }
+            }
         }
-    }//GEN-LAST:event_jButton1MouseClicked
-
+        return null;
+    }
     private void jButton6MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton6MouseClicked
         // TODO add your handling code here:
-        
+
         // TODO add your handling code here:
-        Residencial r = new Residencial((String)Name_Residenciales.getText(), (Integer )Año_Fundacion.getValue());
+        Residencial r = new Residencial((String) Name_Residenciales.getText(), (Integer) Año_Fundacion.getValue());
         residencial.add(r);
         JOptionPane.showMessageDialog(this, "Creado Exitosamente!");
-        
+
         int Año = (Integer) Año_Fundacion.getValue();
         String Nombre_Residencial = Name_Residenciales.getText();
-        
+
         // Crea una lista para almacenar los datos ingresados
         data = new ArrayList<>();
         // Agrega los datos a la lista
@@ -1083,13 +1145,13 @@ public class Empresa_Constructora extends javax.swing.JFrame {
     private void jButton7MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton7MouseClicked
         // TODO add your handling code here:
         // TODO add your handling code here:
-        Residencial r = new Residencial((String)Name_Residenciales.getText(), (Integer )Año_Fundacion.getValue());
+        Residencial r = new Residencial((String) Name_Residenciales.getText(), (Integer) Año_Fundacion.getValue());
         residencial.add(r);
         JOptionPane.showMessageDialog(this, "Creado Exitosamente!");
-        
+
         int Año = (Integer) Año_Fundacion.getValue();
         String Nombre_Residencial = Name_Residenciales.getText();
-        
+
         // Crea una lista para almacenar los datos ingresados
         data = new ArrayList<>();
         // Agrega los datos a la lista
@@ -1103,6 +1165,39 @@ public class Empresa_Constructora extends javax.swing.JFrame {
         Name_Residenciales.setText("  ");
 
     }//GEN-LAST:event_jButton7MouseClicked
+
+    private void EDITAR_RESIDENCIALESKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_EDITAR_RESIDENCIALESKeyPressed
+
+
+    }//GEN-LAST:event_EDITAR_RESIDENCIALESKeyPressed
+
+    private void EDITAR_RESIDENCIALESMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_EDITAR_RESIDENCIALESMouseClicked
+        Residencial residencial = getResidencialSeleccionada();
+        if (residencial != null) {
+            // Obtén los valores actuales de la residencial seleccionada
+            String nombreActual = residencial.getNombre();
+            int anioFundacionActual = residencial.getAñoFundacion();
+
+            // Mostrar los valores actuales en los campos de edición
+            Name_Residenciales.setText(nombreActual);
+            Año_Fundacion.setYear(anioFundacionActual);
+
+            // Aquí puedes agregar la lógica necesaria para mostrar los campos de edición en tu JFrame
+            // Puedes utilizar el método setVisible(true) para mostrar los componentes
+            // Mostrar mensaje de éxito
+            JOptionPane.showMessageDialog(this, "Residencial lista para editar");
+        } else {
+            JOptionPane.showMessageDialog(this, "Selecciona una fila para editar", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_EDITAR_RESIDENCIALESMouseClicked
+
+    private void Name_ResidencialesKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_Name_ResidencialesKeyPressed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_Name_ResidencialesKeyPressed
+
+    private void Año_FundacionKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_Año_FundacionKeyPressed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_Año_FundacionKeyPressed
 
     /**
      * @param args the command line arguments
@@ -1118,16 +1213,24 @@ public class Empresa_Constructora extends javax.swing.JFrame {
                 if ("Windows".equals(info.getName())) {
                     javax.swing.UIManager.setLookAndFeel(info.getClassName());
                     break;
+
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(Empresa_Constructora.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Empresa_Constructora.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
+
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(Empresa_Constructora.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Empresa_Constructora.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
+
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(Empresa_Constructora.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Empresa_Constructora.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
+
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(Empresa_Constructora.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Empresa_Constructora.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
 
@@ -1148,6 +1251,7 @@ public class Empresa_Constructora extends javax.swing.JFrame {
     private javax.swing.JButton COLOR_LOTES2;
     private javax.swing.JButton COLOR_LOTES3;
     private javax.swing.JButton CREAR_RESIDENCIALES;
+    private javax.swing.JButton EDITAR_RESIDENCIALES;
     private javax.swing.JButton ELIMINAR_RESIDENCIAL;
     private javax.swing.JTable LISTA_RESIDENCIALES;
     private javax.swing.JTabbedPane LOTES;
@@ -1155,7 +1259,7 @@ public class Empresa_Constructora extends javax.swing.JFrame {
     private javax.swing.JPanel RESIDENCIALES;
     private javax.swing.JPanel VILLAS;
     private javax.swing.ButtonGroup buttonGroup1;
-    private javax.swing.JButton jButton1;
+    private javax.swing.JComboBox<String> comboBoxResidenciales;
     private javax.swing.JButton jButton10;
     private javax.swing.JButton jButton11;
     private javax.swing.JButton jButton12;
@@ -1166,7 +1270,6 @@ public class Empresa_Constructora extends javax.swing.JFrame {
     private javax.swing.JButton jButton7;
     private javax.swing.JButton jButton8;
     private javax.swing.JButton jButton9;
-    private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JComboBox<String> jComboBox2;
     private javax.swing.JComboBox<String> jComboBox5;
     private javax.swing.JComboBox<String> jComboBox6;

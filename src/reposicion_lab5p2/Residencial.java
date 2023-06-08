@@ -24,6 +24,18 @@ public class Residencial {
         this.villas = new ArrayList<>();
     }
 
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    public void setAñoFundacion(int añoFundacion) {
+        this.añoFundacion = añoFundacion;
+    }
+
+    public void setVillas(List<Villa> villas) {
+        this.villas = villas;
+    }
+
     // Getters y setters
     public String getNombre() {
         return nombre;
