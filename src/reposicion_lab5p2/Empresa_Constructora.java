@@ -5,11 +5,19 @@
  */
 package reposicion_lab5p2;
 
+import java.awt.Color;
 import java.awt.event.KeyEvent;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import javax.swing.JColorChooser;
 import javax.swing.JOptionPane;
+import javax.swing.JSpinner;
+import javax.swing.SpinnerDateModel;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -22,6 +30,12 @@ public class Empresa_Constructora extends javax.swing.JFrame {
 
     private DefaultTableModel residencialModel;
     private DefaultTableModel villaModel;
+    private DefaultTableModel apartamentoModel;
+    private DefaultTableModel casasModel;
+    private DefaultTableModel negocioModel;
+    private JSpinner spinnerHoraApertura;
+    private JSpinner spinnerHoraCierre;
+
 
     /**
      * Creates new form Empresa_Constructora
@@ -29,6 +43,7 @@ public class Empresa_Constructora extends javax.swing.JFrame {
     public Empresa_Constructora() {
         initComponents();
 
+         initializeSpinners();
         residencialModel = new DefaultTableModel();
         residencialModel.addColumn("NOMBRE");
         residencialModel.addColumn("AÑO DE FUNDACION");
@@ -53,7 +68,48 @@ public class Empresa_Constructora extends javax.swing.JFrame {
         for (String[] row : data) {
             villaModel.addRow(row);
         }
+        apartamentoModel = new DefaultTableModel();
+        apartamentoModel.addColumn("CODIGO");
+        apartamentoModel.addColumn("VILLA DE P.");
+        apartamentoModel.addColumn("PISOS");
+        apartamentoModel.addColumn("CUARTOS FAM");
+        apartamentoModel.addColumn("CUARTOS PERS.");
 
+        // Crear la lista de datos y agregar algunos datos de ejemplo
+        data = new ArrayList<>();
+
+        // Agregar los datos al modelo de la tabla
+        for (String[] row : data) {
+            apartamentoModel.addRow(row);
+        }
+
+        casasModel = new DefaultTableModel();
+        casasModel.addColumn("CODIGO");
+        casasModel.addColumn("VILLA DE P.");
+        casasModel.addColumn("PISOS");
+        casasModel.addColumn("CUARTOS PERS.");
+        data = new ArrayList<>();
+
+        // Agregar los datos al modelo de la tabla
+        for (String[] row : data) {
+            casasModel.addRow(row);
+        }
+
+        negocioModel = new DefaultTableModel();
+        negocioModel.addColumn("CODIGO");
+        negocioModel.addColumn("VILLA DE P.");
+        negocioModel.addColumn("PISOS");
+        negocioModel.addColumn("Hora Apertura");
+        negocioModel.addColumn("Hora Cierre");
+        data = new ArrayList<>();
+
+        // Agregar los datos al modelo de la tabla
+        for (String[] row : data) {
+            negocioModel.addRow(row);
+        }
+        LISTA_NEGOCIO.setModel(negocioModel);
+        LISTA_CASAS.setModel(casasModel);
+        LISTA_APARTAMENTOS.setModel(apartamentoModel);
         LISTA_RESIDENCIALES.setModel(residencialModel);
         // Configurar el KeyListener para el campo de edición
         Name_Residenciales.addKeyListener(new java.awt.event.KeyAdapter() {
@@ -89,6 +145,7 @@ public class Empresa_Constructora extends javax.swing.JFrame {
         // Obtener la villa seleccionada
         Tabla_Villas.setModel(villaModel);
         // Configurar el KeyListener para el campo de edición de nombre de villa
+        // Configurar el KeyListener para el campo de edición de nombre de villa
         NombreVilla.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
@@ -96,24 +153,23 @@ public class Empresa_Constructora extends javax.swing.JFrame {
                     if (villa != null) {
                         // Obtener los nuevos valores editados
                         String nuevoNombre = NombreVilla.getText();
-                        String residencialActual = villa.getResidencial();
-                        int capacidadLotesActual = villa.getCapacidadLotes();
-                        String seguridadActual = villa.getSeguridad24Horas();
+                        int capacidadLotesActual = (int) CapacidadLotes.getValue();
+                        String seguridadActual = (String) comboBoxSeguridad24Hr.getSelectedItem();
 
                         // Actualizar los valores en la tabla y en el objeto de la villa
                         int filaSeleccionada = Tabla_Villas.getSelectedRow();
                         villaModel.setValueAt(nuevoNombre, filaSeleccionada, 0);
-                        villaModel.setValueAt(residencialActual, filaSeleccionada, 1);
                         villaModel.setValueAt(capacidadLotesActual, filaSeleccionada, 2);
                         villaModel.setValueAt(seguridadActual, filaSeleccionada, 3);
                         villa.setNombre(nuevoNombre);
-                        villa.setResidencial(residencialActual);
-                        villa.setCapacidadLotes(capacidadLotesActual);
+                        villa.setCapacidadLotes(String.valueOf(capacidadLotesActual));
                         villa.setSeguridad24Horas(seguridadActual);
 
                         // Limpiar el campo de edición
                         NombreVilla.setText("");
-                        
+                        ResidencialPertenencia.setText("");
+                        CapacidadLotes.setValue(0);
+                        comboBoxSeguridad24Hr.setSelectedIndex(0);
 
                         // Mostrar mensaje de éxito
                         JOptionPane.showMessageDialog(null, "Villa editada exitosamente");
@@ -123,9 +179,31 @@ public class Empresa_Constructora extends javax.swing.JFrame {
                 }
             }
         });
-   
+        
+        spinnerHoraApertura = new JSpinner(new SpinnerDateModel());
+        spinnerHoraCierre = new JSpinner(new SpinnerDateModel());
+
+        JSpinner.DateEditor horaAperturaEditor = new JSpinner.DateEditor(spinnerHoraApertura, "HH:mm");
+        JSpinner.DateEditor horaCierreEditor = new JSpinner.DateEditor(spinnerHoraCierre, "HH:mm");
+        spinnerHoraApertura.setEditor(horaAperturaEditor);
+        spinnerHoraCierre.setEditor(horaCierreEditor);
 
     }
+    private void initializeSpinners() {
+        // Configurar los valores mínimos y máximos del JSpinner
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+        LocalTime horaMinima = LocalTime.parse("00:00", formatter);
+        LocalTime horaMaxima = LocalTime.parse("23:59", formatter);
+
+        SpinnerDateModel horaAperturaModel = (SpinnerDateModel) spinnerHoraApertura.getModel();
+        horaAperturaModel.setStart(horaMinima);
+        horaAperturaModel.setEnd(horaMaxima);
+
+        SpinnerDateModel horaCierreModel = (SpinnerDateModel) spinnerHoraCierre.getModel();
+        horaCierreModel.setStart(horaMinima);
+        horaCierreModel.setEnd(horaMaxima);
+    }
+
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -165,61 +243,56 @@ public class Empresa_Constructora extends javax.swing.JFrame {
         ELIMIAR_VILLA = new javax.swing.JButton();
         CREAR_VILLA = new javax.swing.JButton();
         ResidencialPertenencia = new javax.swing.JTextField();
+        jLabel10 = new javax.swing.JLabel();
         LOTES = new javax.swing.JTabbedPane();
         jTabbedPane2 = new javax.swing.JTabbedPane();
         jPanel1 = new javax.swing.JPanel();
         jLabel21 = new javax.swing.JLabel();
         jLabel22 = new javax.swing.JLabel();
-        jTextField6 = new javax.swing.JTextField();
-        jLabel23 = new javax.swing.JLabel();
-        jTextField7 = new javax.swing.JTextField();
+        CodigoLote = new javax.swing.JTextField();
         jLabel24 = new javax.swing.JLabel();
-        jComboBox6 = new javax.swing.JComboBox<>();
         jLabel25 = new javax.swing.JLabel();
-        jSpinner6 = new javax.swing.JSpinner();
-        COLOR_LOTES2 = new javax.swing.JButton();
+        CantidadPisos = new javax.swing.JSpinner();
         jLabel26 = new javax.swing.JLabel();
-        jSpinner7 = new javax.swing.JSpinner();
-        jSpinner8 = new javax.swing.JSpinner();
+        CuartosFamiliares = new javax.swing.JSpinner();
+        CuartosPersonales = new javax.swing.JSpinner();
         jLabel27 = new javax.swing.JLabel();
         jLabel36 = new javax.swing.JLabel();
         jScrollPane8 = new javax.swing.JScrollPane();
         jList6 = new javax.swing.JList<>();
         jScrollPane9 = new javax.swing.JScrollPane();
-        jTable3 = new javax.swing.JTable();
-        jButton7 = new javax.swing.JButton();
+        LISTA_APARTAMENTOS = new javax.swing.JTable();
+        CREAR_APARTAMENTOS = new javax.swing.JButton();
         jButton8 = new javax.swing.JButton();
         jButton9 = new javax.swing.JButton();
+        VillaPertenencia = new javax.swing.JTextField();
+        COLOR_ROPA = new javax.swing.JButton();
         jPanel4 = new javax.swing.JPanel();
         jLabel28 = new javax.swing.JLabel();
         jLabel29 = new javax.swing.JLabel();
-        jTextField8 = new javax.swing.JTextField();
-        jLabel30 = new javax.swing.JLabel();
-        jTextField9 = new javax.swing.JTextField();
+        CODIGO_CASA = new javax.swing.JTextField();
         jLabel31 = new javax.swing.JLabel();
-        jComboBox7 = new javax.swing.JComboBox<>();
         jLabel32 = new javax.swing.JLabel();
-        jSpinner9 = new javax.swing.JSpinner();
-        COLOR_LOTES3 = new javax.swing.JButton();
+        PISOS_CASA = new javax.swing.JSpinner();
+        CasaColor = new javax.swing.JButton();
         jLabel33 = new javax.swing.JLabel();
-        jSpinner10 = new javax.swing.JSpinner();
+        CUARTOS_P_CASA = new javax.swing.JSpinner();
         jLabel35 = new javax.swing.JLabel();
         jScrollPane7 = new javax.swing.JScrollPane();
         jList5 = new javax.swing.JList<>();
         jScrollPane10 = new javax.swing.JScrollPane();
-        jTable4 = new javax.swing.JTable();
+        LISTA_CASAS = new javax.swing.JTable();
         jButton10 = new javax.swing.JButton();
         jButton11 = new javax.swing.JButton();
+        VILLA_P_CASA = new javax.swing.JTextField();
+        CREAR_CASAS = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         jLabel14 = new javax.swing.JLabel();
-        jTextField4 = new javax.swing.JTextField();
-        jLabel15 = new javax.swing.JLabel();
-        jTextField5 = new javax.swing.JTextField();
+        CODIGO_NEGOCIO = new javax.swing.JTextField();
         jLabel16 = new javax.swing.JLabel();
-        jComboBox5 = new javax.swing.JComboBox<>();
         jLabel17 = new javax.swing.JLabel();
-        jSpinner3 = new javax.swing.JSpinner();
-        COLOR_LOTES1 = new javax.swing.JButton();
+        PISOS_NEGOCIOS = new javax.swing.JSpinner();
+        COLOR_NEGOCIO = new javax.swing.JButton();
         jLabel18 = new javax.swing.JLabel();
         jLabel19 = new javax.swing.JLabel();
         jLabel20 = new javax.swing.JLabel();
@@ -227,11 +300,13 @@ public class Empresa_Constructora extends javax.swing.JFrame {
         jScrollPane6 = new javax.swing.JScrollPane();
         jList4 = new javax.swing.JList<>();
         jScrollPane11 = new javax.swing.JScrollPane();
-        jTable5 = new javax.swing.JTable();
+        LISTA_NEGOCIO = new javax.swing.JTable();
         jButton12 = new javax.swing.JButton();
         jButton13 = new javax.swing.JButton();
-        jSpinner2 = new javax.swing.JSpinner();
-        jSpinner4 = new javax.swing.JSpinner();
+        HR_APERTURA = new javax.swing.JSpinner();
+        HR_CIERRE = new javax.swing.JSpinner();
+        VILLA_P_NEGOCIOS = new javax.swing.JTextField();
+        CREAR_NEGOCIO = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -335,7 +410,7 @@ public class Empresa_Constructora extends javax.swing.JFrame {
                                             .addComponent(Año_Fundacion, javax.swing.GroupLayout.PREFERRED_SIZE, 84, javax.swing.GroupLayout.PREFERRED_SIZE))
                                         .addGap(58, 58, 58)
                                         .addComponent(CREAR_RESIDENCIALES, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 91, Short.MAX_VALUE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 111, Short.MAX_VALUE))
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, RESIDENCIALESLayout.createSequentialGroup()
                                 .addGroup(RESIDENCIALESLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                                     .addComponent(jScrollPane3, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
@@ -379,7 +454,7 @@ public class Empresa_Constructora extends javax.swing.JFrame {
                     .addGroup(RESIDENCIALESLayout.createSequentialGroup()
                         .addGap(18, 18, 18)
                         .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 63, Short.MAX_VALUE))
+                        .addGap(0, 67, Short.MAX_VALUE))
                     .addGroup(RESIDENCIALESLayout.createSequentialGroup()
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(RESIDENCIALESLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -469,6 +544,8 @@ public class Empresa_Constructora extends javax.swing.JFrame {
             }
         });
 
+        jLabel10.setText("(Dar ENTER en Nombre, para guardar los datos editados)");
+
         javax.swing.GroupLayout VILLASLayout = new javax.swing.GroupLayout(VILLAS);
         VILLAS.setLayout(VILLASLayout);
         VILLASLayout.setHorizontalGroup(
@@ -478,31 +555,37 @@ public class Empresa_Constructora extends javax.swing.JFrame {
                 .addGroup(VILLASLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(VILLASLayout.createSequentialGroup()
                         .addGroup(VILLASLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(VILLASLayout.createSequentialGroup()
-                                .addGroup(VILLASLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(VILLASLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                        .addComponent(jLabel7)
-                                        .addComponent(jLabel6)
-                                        .addComponent(jLabel5)
-                                        .addComponent(NombreVilla, javax.swing.GroupLayout.DEFAULT_SIZE, 181, Short.MAX_VALUE)
-                                        .addComponent(CapacidadLotes, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
-                                    .addComponent(ResidencialPertenencia, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGap(100, 100, 100)
-                                .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 440, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(jLabel9))
-                        .addContainerGap(45, Short.MAX_VALUE))
+                            .addComponent(jLabel7)
+                            .addComponent(jLabel6)
+                            .addComponent(jLabel5)
+                            .addComponent(NombreVilla, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(CapacidadLotes, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(ResidencialPertenencia, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(100, 100, 100)
+                        .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 440, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(65, Short.MAX_VALUE))
                     .addGroup(VILLASLayout.createSequentialGroup()
-                        .addGroup(VILLASLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(comboBoxSeguridad24Hr, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabel8, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addGap(37, 37, 37)
-                        .addComponent(CREAR_VILLA, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(118, 118, 118)
-                        .addComponent(EDITAR_VILLA, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(ELIMIAR_VILLA, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(83, 83, 83))))
+                        .addGroup(VILLASLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel9)
+                            .addGroup(VILLASLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                                .addGroup(VILLASLayout.createSequentialGroup()
+                                    .addGroup(VILLASLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                        .addComponent(comboBoxSeguridad24Hr, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(jLabel8, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                    .addGap(37, 37, 37)
+                                    .addComponent(CREAR_VILLA, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                        .addGroup(VILLASLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(VILLASLayout.createSequentialGroup()
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(EDITAR_VILLA, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(ELIMIAR_VILLA, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(83, 83, 83))
+                            .addGroup(VILLASLayout.createSequentialGroup()
+                                .addGap(54, 54, 54)
+                                .addComponent(jLabel10)
+                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))))
         );
         VILLASLayout.setVerticalGroup(
             VILLASLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -526,20 +609,21 @@ public class Empresa_Constructora extends javax.swing.JFrame {
                 .addComponent(jLabel8)
                 .addGap(18, 18, 18)
                 .addGroup(VILLASLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(comboBoxSeguridad24Hr, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(CREAR_VILLA, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 36, Short.MAX_VALUE)
+                .addGroup(VILLASLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(VILLASLayout.createSequentialGroup()
-                        .addComponent(comboBoxSeguridad24Hr, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 52, Short.MAX_VALUE)
                         .addGroup(VILLASLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(EDITAR_VILLA, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(ELIMIAR_VILLA, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(11, 11, 11))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jLabel10))
                     .addGroup(VILLASLayout.createSequentialGroup()
-                        .addComponent(CREAR_VILLA, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                .addComponent(jLabel9)
-                .addGap(18, 18, 18)
-                .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(49, 49, 49))
+                        .addComponent(jLabel9)
+                        .addGap(18, 18, 18)
+                        .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(90, 90, 90))
         );
 
         jTabbedPane1.addTab("VILLAS", VILLAS);
@@ -548,26 +632,15 @@ public class Empresa_Constructora extends javax.swing.JFrame {
 
         jLabel22.setText("(Comenzar su Codigo con AP)");
 
-        jTextField6.addActionListener(new java.awt.event.ActionListener() {
+        CodigoLote.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField6ActionPerformed(evt);
+                CodigoLoteActionPerformed(evt);
             }
         });
-
-        jLabel23.setText("Nombre");
 
         jLabel24.setText("Villa de Pertenencia");
 
-        jComboBox6.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-
         jLabel25.setText("Pisos");
-
-        COLOR_LOTES2.setText("COLOR");
-        COLOR_LOTES2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                COLOR_LOTES2ActionPerformed(evt);
-            }
-        });
 
         jLabel26.setText("Cuartos Familiares:");
 
@@ -578,44 +651,42 @@ public class Empresa_Constructora extends javax.swing.JFrame {
         jList6.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         jScrollPane8.setViewportView(jList6);
 
-        jTable3.setModel(new javax.swing.table.DefaultTableModel(
+        LISTA_APARTAMENTOS.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+
             },
             new String [] {
-                "NOMBRE", "RESIDENCIAL DE P.", "CAPACIDAD LOTES", "SEGURIDAD 24 Hrs"
+                "CODIGO", "VILLA DE P.", "PISOS", "CUARTOS FAM", "CUARTOS PERS."
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.String.class, java.lang.String.class, java.lang.Integer.class, java.lang.String.class
-            };
-            boolean[] canEdit = new boolean [] {
-                false, false, true, true
+                java.lang.String.class, java.lang.String.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.Integer.class
             };
 
             public Class getColumnClass(int columnIndex) {
                 return types [columnIndex];
             }
-
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return canEdit [columnIndex];
-            }
         });
-        jScrollPane9.setViewportView(jTable3);
+        jScrollPane9.setViewportView(LISTA_APARTAMENTOS);
 
-        jButton7.setText("CREAR");
-        jButton7.addMouseListener(new java.awt.event.MouseAdapter() {
+        CREAR_APARTAMENTOS.setText("CREAR");
+        CREAR_APARTAMENTOS.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jButton7MouseClicked(evt);
+                CREAR_APARTAMENTOSMouseClicked(evt);
             }
         });
 
         jButton8.setText("ELIMINAR");
 
         jButton9.setText("EDITAR");
+
+        COLOR_ROPA.setText("Color");
+        COLOR_ROPA.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        COLOR_ROPA.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                COLOR_ROPAMouseClicked(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -625,52 +696,46 @@ public class Empresa_Constructora extends javax.swing.JFrame {
                 .addGap(22, 22, 22)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(52, 52, 52)
+                        .addComponent(CREAR_APARTAMENTOS, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(100, 100, 100)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel25)
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(jPanel1Layout.createSequentialGroup()
-                                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(jLabel26)
-                                            .addComponent(jSpinner7, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                        .addGap(29, 29, 29)
-                                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(jLabel27)
-                                            .addComponent(jSpinner8, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                                    .addGroup(jPanel1Layout.createSequentialGroup()
-                                        .addGap(61, 61, 61)
-                                        .addComponent(jButton7, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                                .addGap(29, 29, 29)
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel36)
-                                    .addComponent(jScrollPane8, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 186, Short.MAX_VALUE))))
+                            .addComponent(jLabel36)
+                            .addComponent(jScrollPane8, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 206, Short.MAX_VALUE))
                         .addGap(330, 330, 330))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel24)
+                            .addComponent(CodigoLote, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel26)
+                                    .addComponent(CuartosFamiliares, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(32, 32, 32)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel27)
+                                    .addComponent(CuartosPersonales, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(jLabel25)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(jLabel21)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jLabel22))
                             .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                                 .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
-                                    .addComponent(jSpinner6, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(CantidadPisos, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(COLOR_LOTES2, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
-                                    .addComponent(jLabel21)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                    .addComponent(jLabel22)))
-                            .addComponent(jLabel24)
-                            .addComponent(jLabel23)
-                            .addComponent(jTextField7, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jComboBox6, javax.swing.GroupLayout.PREFERRED_SIZE, 143, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jTextField6, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addComponent(COLOR_ROPA, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(VillaPertenencia, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(jScrollPane9, javax.swing.GroupLayout.PREFERRED_SIZE, 440, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(24, 24, 24))
-                            .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                                 .addComponent(jButton9, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(128, 128, 128)
                                 .addComponent(jButton8, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(67, 67, 67))))))
+                                .addGap(67, 67, 67))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                                .addComponent(jScrollPane9, javax.swing.GroupLayout.PREFERRED_SIZE, 461, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(24, 24, 24))))))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -680,51 +745,46 @@ public class Empresa_Constructora extends javax.swing.JFrame {
                         .addGap(26, 26, 26)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(jScrollPane9, javax.swing.GroupLayout.PREFERRED_SIZE, 189, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 24, Short.MAX_VALUE)
+                                .addComponent(CantidadPisos, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                     .addComponent(jLabel21)
                                     .addComponent(jLabel22))
                                 .addGap(18, 18, 18)
-                                .addComponent(jTextField6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(22, 22, 22)
-                                .addComponent(jLabel23)
-                                .addGap(18, 18, 18)
-                                .addComponent(jTextField7, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(16, 16, 16)
+                                .addComponent(CodigoLote, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(36, 36, 36)
                                 .addComponent(jLabel24)
                                 .addGap(18, 18, 18)
-                                .addComponent(jComboBox6, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(jScrollPane9, javax.swing.GroupLayout.PREFERRED_SIZE, 189, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(23, 23, 23)
-                        .addComponent(jLabel25)
+                                .addComponent(VillaPertenencia, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                                        .addComponent(jLabel25)
+                                        .addGap(38, 38, 38))
+                                    .addComponent(COLOR_ROPA, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))))
                         .addGap(18, 18, 18)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jSpinner6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(COLOR_LOTES2, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(32, 32, 32))
+                            .addComponent(jLabel27)
+                            .addComponent(jLabel26))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(CuartosPersonales, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(CuartosFamiliares, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                         .addContainerGap()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jButton8, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jButton9, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(53, 53, 53)))
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel36)
-                        .addGap(18, 18, 18)
-                        .addComponent(jScrollPane8, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(jLabel27)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(jSpinner8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(jLabel26)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(jSpinner7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(18, 18, 18)
-                        .addComponent(jButton7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(jLabel36)
+                .addGap(18, 18, 18)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jScrollPane8, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(CREAR_APARTAMENTOS, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(63, Short.MAX_VALUE))
         );
 
         jTabbedPane2.addTab("APARTAMENTOS", jPanel1);
@@ -733,24 +793,20 @@ public class Empresa_Constructora extends javax.swing.JFrame {
 
         jLabel29.setText("(Comenzar su Codigo con CS)");
 
-        jTextField8.addActionListener(new java.awt.event.ActionListener() {
+        CODIGO_CASA.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField8ActionPerformed(evt);
+                CODIGO_CASAActionPerformed(evt);
             }
         });
 
-        jLabel30.setText("Nombre");
-
         jLabel31.setText("Villa de Pertenencia");
-
-        jComboBox7.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
         jLabel32.setText("Pisos");
 
-        COLOR_LOTES3.setText("COLOR");
-        COLOR_LOTES3.addActionListener(new java.awt.event.ActionListener() {
+        CasaColor.setText("COLOR");
+        CasaColor.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                COLOR_LOTES3ActionPerformed(evt);
+                CasaColorActionPerformed(evt);
             }
         });
 
@@ -761,12 +817,9 @@ public class Empresa_Constructora extends javax.swing.JFrame {
         jList5.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         jScrollPane7.setViewportView(jList5);
 
-        jTable4.setModel(new javax.swing.table.DefaultTableModel(
+        LISTA_CASAS.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+
             },
             new String [] {
                 "NOMBRE", "RESIDENCIAL DE P.", "CAPACIDAD LOTES", "SEGURIDAD 24 Hrs"
@@ -775,64 +828,63 @@ public class Empresa_Constructora extends javax.swing.JFrame {
             Class[] types = new Class [] {
                 java.lang.String.class, java.lang.String.class, java.lang.Integer.class, java.lang.String.class
             };
-            boolean[] canEdit = new boolean [] {
-                false, false, true, true
-            };
 
             public Class getColumnClass(int columnIndex) {
                 return types [columnIndex];
             }
-
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return canEdit [columnIndex];
-            }
         });
-        jScrollPane10.setViewportView(jTable4);
+        jScrollPane10.setViewportView(LISTA_CASAS);
 
         jButton10.setText("EDITAR");
 
         jButton11.setText("ELIMINAR");
 
+        CREAR_CASAS.setText("CREAR");
+        CREAR_CASAS.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                CREAR_CASASMouseClicked(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
         jPanel4Layout.setHorizontalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel4Layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
                 .addGap(26, 26, 26)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel31)
+                    .addComponent(CODIGO_CASA, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jPanel4Layout.createSequentialGroup()
-                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jSpinner10, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel33))
-                        .addGap(33, 33, 33)
-                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel35)
-                            .addComponent(jScrollPane7, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 186, Short.MAX_VALUE))
-                        .addGap(443, 443, 443))
+                        .addComponent(jLabel28)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel29))
+                    .addComponent(VILLA_P_CASA, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jPanel4Layout.createSequentialGroup()
                         .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel32)
-                            .addComponent(jLabel31)
-                            .addComponent(jLabel30)
-                            .addComponent(jComboBox7, javax.swing.GroupLayout.PREFERRED_SIZE, 143, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jTextField8, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jSpinner9, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(jPanel4Layout.createSequentialGroup()
-                                .addComponent(jLabel28)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jLabel29))
-                            .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                .addComponent(COLOR_LOTES3, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(jTextField9, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jScrollPane10, javax.swing.GroupLayout.PREFERRED_SIZE, 440, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(jPanel4Layout.createSequentialGroup()
-                                .addComponent(jButton10, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(128, 128, 128)
-                                .addComponent(jButton11, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(43, 43, 43)))
-                        .addGap(36, 36, 36))))
+                            .addComponent(PISOS_CASA, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(31, 31, 31)
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(CUARTOS_P_CASA, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel33)))
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addGap(37, 37, 37)
+                        .addComponent(CasaColor, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
+                        .addComponent(CREAR_CASAS, javax.swing.GroupLayout.PREFERRED_SIZE, 142, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(32, 32, 32)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 112, Short.MAX_VALUE)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addGap(40, 40, 40)
+                        .addComponent(jButton10, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(160, 160, 160)
+                        .addComponent(jButton11, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jLabel35)
+                    .addComponent(jScrollPane7, javax.swing.GroupLayout.PREFERRED_SIZE, 178, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jScrollPane10, javax.swing.GroupLayout.PREFERRED_SIZE, 440, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(36, 36, 36))
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -844,39 +896,37 @@ public class Empresa_Constructora extends javax.swing.JFrame {
                             .addComponent(jLabel28)
                             .addComponent(jLabel29))
                         .addGap(18, 18, 18)
-                        .addComponent(jTextField8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(22, 22, 22)
-                        .addComponent(jLabel30)
-                        .addGap(18, 18, 18)
-                        .addComponent(jTextField9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(16, 16, 16)
+                        .addComponent(CODIGO_CASA, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(38, 38, 38)
                         .addComponent(jLabel31)
                         .addGap(18, 18, 18)
-                        .addComponent(jComboBox7, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(jLabel32)
+                        .addComponent(VILLA_P_CASA, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
                         .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jSpinner9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(COLOR_LOTES3, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(jPanel4Layout.createSequentialGroup()
-                            .addComponent(jScrollPane10, javax.swing.GroupLayout.PREFERRED_SIZE, 189, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGap(69, 69, 69))
-                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel32)
+                            .addComponent(jLabel33))
+                        .addGap(18, 18, 18)
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(PISOS_CASA, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(CUARTOS_P_CASA, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(32, 32, 32)
+                        .addComponent(CasaColor, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addComponent(jScrollPane10, javax.swing.GroupLayout.PREFERRED_SIZE, 189, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(32, 32, 32)
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jButton11, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jButton10, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addGap(18, 18, 18)
+                .addGap(11, 11, 11)
+                .addComponent(jLabel35)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel4Layout.createSequentialGroup()
-                        .addComponent(jLabel33)
                         .addGap(18, 18, 18)
-                        .addComponent(jSpinner10, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(jScrollPane7, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel4Layout.createSequentialGroup()
-                        .addComponent(jLabel35)
-                        .addGap(18, 18, 18)
-                        .addComponent(jScrollPane7, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(53, Short.MAX_VALUE))
+                        .addGap(32, 32, 32)
+                        .addComponent(CREAR_CASAS, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(64, Short.MAX_VALUE))
         );
 
         jTabbedPane2.addTab("CASAS", jPanel4);
@@ -885,24 +935,20 @@ public class Empresa_Constructora extends javax.swing.JFrame {
 
         jLabel14.setText("Codigo:  ");
 
-        jTextField4.addActionListener(new java.awt.event.ActionListener() {
+        CODIGO_NEGOCIO.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField4ActionPerformed(evt);
+                CODIGO_NEGOCIOActionPerformed(evt);
             }
         });
 
-        jLabel15.setText("Nombre");
-
         jLabel16.setText("Villa de Pertenencia");
-
-        jComboBox5.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
         jLabel17.setText("Pisos");
 
-        COLOR_LOTES1.setText("COLOR DE LOTE");
-        COLOR_LOTES1.addActionListener(new java.awt.event.ActionListener() {
+        COLOR_NEGOCIO.setText("COLOR");
+        COLOR_NEGOCIO.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                COLOR_LOTES1ActionPerformed(evt);
+                COLOR_NEGOCIOActionPerformed(evt);
             }
         });
 
@@ -917,37 +963,34 @@ public class Empresa_Constructora extends javax.swing.JFrame {
         jList4.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         jScrollPane6.setViewportView(jList4);
 
-        jTable5.setModel(new javax.swing.table.DefaultTableModel(
+        LISTA_NEGOCIO.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+
             },
             new String [] {
-                "NOMBRE", "RESIDENCIAL DE P.", "CAPACIDAD LOTES", "SEGURIDAD 24 Hrs"
+                "CODIGO", "VILLA DE P.", "PISOS", "HORA ENTRADA", "HORA SALIDA"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.String.class, java.lang.String.class, java.lang.Integer.class, java.lang.String.class
-            };
-            boolean[] canEdit = new boolean [] {
-                false, false, true, true
+                java.lang.String.class, java.lang.String.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.Integer.class
             };
 
             public Class getColumnClass(int columnIndex) {
                 return types [columnIndex];
             }
-
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return canEdit [columnIndex];
-            }
         });
-        jScrollPane11.setViewportView(jTable5);
+        jScrollPane11.setViewportView(LISTA_NEGOCIO);
 
         jButton12.setText("EDITAR");
 
         jButton13.setText("ELIMINAR");
+
+        CREAR_NEGOCIO.setText("CREAR");
+        CREAR_NEGOCIO.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                CREAR_NEGOCIOMouseClicked(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -957,45 +1000,55 @@ public class Empresa_Constructora extends javax.swing.JFrame {
                 .addGap(27, 27, 27)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGap(281, 281, 281)
+                        .addComponent(jLabel34)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel2Layout.createSequentialGroup()
                                 .addComponent(jLabel14)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jLabel20))
                             .addGroup(jPanel2Layout.createSequentialGroup()
-                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(COLOR_LOTES1)
+                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                     .addGroup(jPanel2Layout.createSequentialGroup()
                                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(jLabel18)
-                                            .addComponent(jSpinner2, javax.swing.GroupLayout.PREFERRED_SIZE, 62, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                        .addGap(31, 31, 31)
-                                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                            .addComponent(jLabel19, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                            .addComponent(jSpinner4))))
-                                .addGap(35, 35, 35)
+                                            .addComponent(jLabel16)
+                                            .addComponent(CODIGO_NEGOCIO, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addGap(34, 34, 34))
+                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                            .addComponent(CREAR_NEGOCIO, javax.swing.GroupLayout.PREFERRED_SIZE, 142, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                                .addGroup(jPanel2Layout.createSequentialGroup()
+                                                    .addComponent(HR_APERTURA, javax.swing.GroupLayout.PREFERRED_SIZE, 62, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                    .addComponent(HR_CIERRE, javax.swing.GroupLayout.PREFERRED_SIZE, 59, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                .addGroup(jPanel2Layout.createSequentialGroup()
+                                                    .addComponent(jLabel18)
+                                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                    .addComponent(jLabel19))
+                                                .addGroup(jPanel2Layout.createSequentialGroup()
+                                                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                        .addComponent(jLabel17)
+                                                        .addComponent(PISOS_NEGOCIOS, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                    .addComponent(COLOR_NEGOCIO, javax.swing.GroupLayout.PREFERRED_SIZE, 77, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                .addComponent(VILLA_P_NEGOCIOS)))
+                                        .addGap(18, 18, 18)))
                                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel34)
-                                    .addComponent(jScrollPane6, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 186, Short.MAX_VALUE))))
-                        .addGap(379, 379, 379))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel17)
-                            .addComponent(jLabel16)
-                            .addComponent(jLabel15)
-                            .addComponent(jTextField5, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jComboBox5, javax.swing.GroupLayout.PREFERRED_SIZE, 143, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jSpinner3, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jScrollPane11, javax.swing.GroupLayout.PREFERRED_SIZE, 440, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(jPanel2Layout.createSequentialGroup()
-                                .addComponent(jButton12, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(128, 128, 128)
-                                .addComponent(jButton13, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(43, 43, 43)))
-                        .addGap(62, 62, 62))))
+                                    .addGroup(jPanel2Layout.createSequentialGroup()
+                                        .addGap(54, 54, 54)
+                                        .addComponent(jScrollPane11, javax.swing.GroupLayout.PREFERRED_SIZE, 512, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                                        .addComponent(jButton12, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(128, 128, 128)
+                                        .addComponent(jButton13, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(84, 84, 84))
+                                    .addGroup(jPanel2Layout.createSequentialGroup()
+                                        .addGap(100, 100, 100)
+                                        .addComponent(jScrollPane6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                        .addContainerGap(36, Short.MAX_VALUE))))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1004,46 +1057,39 @@ public class Empresa_Constructora extends javax.swing.JFrame {
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel14)
                     .addComponent(jLabel20))
-                .addGap(23, 23, 23)
+                .addGap(18, 18, 18)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane11, javax.swing.GroupLayout.PREFERRED_SIZE, 189, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(jLabel15)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jTextField5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(23, 23, 23)
+                        .addComponent(CODIGO_NEGOCIO, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(29, 29, 29)
                         .addComponent(jLabel16)
                         .addGap(18, 18, 18)
-                        .addComponent(jComboBox5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(33, 33, 33)
-                        .addComponent(jLabel17)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jSpinner3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(COLOR_LOTES1, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addGroup(jPanel2Layout.createSequentialGroup()
-                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(jLabel18)
-                                    .addComponent(jLabel19))
+                                .addComponent(VILLA_P_NEGOCIOS, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(34, 34, 34)
+                                .addComponent(jLabel17)
                                 .addGap(18, 18, 18)
-                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(jSpinner2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jSpinner4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addComponent(PISOS_NEGOCIOS, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(COLOR_NEGOCIO, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(18, 18, 18)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel19)
+                            .addComponent(jLabel18))
+                        .addGap(18, 18, 18)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(HR_APERTURA, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(HR_CIERRE, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jButton13, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jButton12, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(31, 31, 31)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel2Layout.createSequentialGroup()
                                 .addComponent(jLabel34)
                                 .addGap(18, 18, 18)
-                                .addComponent(jScrollPane6, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(jPanel2Layout.createSequentialGroup()
-                            .addComponent(jScrollPane11, javax.swing.GroupLayout.PREFERRED_SIZE, 189, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGap(69, 69, 69))
-                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jButton13, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jButton12, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addContainerGap(46, Short.MAX_VALUE))
+                                .addComponent(jScrollPane6, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(CREAR_NEGOCIO, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)))))
         );
 
         LOTES.addTab("NEGOCIOS", jPanel2);
@@ -1064,29 +1110,27 @@ public class Empresa_Constructora extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jTextField4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField4ActionPerformed
+    private void CODIGO_NEGOCIOActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CODIGO_NEGOCIOActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField4ActionPerformed
+    }//GEN-LAST:event_CODIGO_NEGOCIOActionPerformed
 
-    private void COLOR_LOTES1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_COLOR_LOTES1ActionPerformed
+    private void COLOR_NEGOCIOActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_COLOR_NEGOCIOActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_COLOR_LOTES1ActionPerformed
+    }//GEN-LAST:event_COLOR_NEGOCIOActionPerformed
 
-    private void jTextField6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField6ActionPerformed
+    private void CodigoLoteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CodigoLoteActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField6ActionPerformed
+    }//GEN-LAST:event_CodigoLoteActionPerformed
 
-    private void COLOR_LOTES2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_COLOR_LOTES2ActionPerformed
+    private void CODIGO_CASAActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CODIGO_CASAActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_COLOR_LOTES2ActionPerformed
+    }//GEN-LAST:event_CODIGO_CASAActionPerformed
 
-    private void jTextField8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField8ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField8ActionPerformed
-
-    private void COLOR_LOTES3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_COLOR_LOTES3ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_COLOR_LOTES3ActionPerformed
+    private void CasaColorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CasaColorActionPerformed
+        // TODO add your handling code here:   
+        CasaColor.setBackground(
+                JColorChooser.showDialog(this, "Elige un color", Color.yellow));
+    }//GEN-LAST:event_CasaColorActionPerformed
 
     private void CREAR_RESIDENCIALESMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_CREAR_RESIDENCIALESMouseClicked
         // TODO add your handling code here:
@@ -1137,14 +1181,12 @@ public class Empresa_Constructora extends javax.swing.JFrame {
         int filaSeleccionada = Tabla_Villas.getSelectedRow();
         if (filaSeleccionada != -1) {
             String nombre = (String) Tabla_Villas.getValueAt(filaSeleccionada, 0);
-            String Residencial = (String) Tabla_Villas.getValueAt(filaSeleccionada, 1);
-            // Aquí debes obtener el resto de los valores de la villa (capacidad de lotes y seguridad 24 hrs)
-            // Puedes utilizar los métodos getValueAt() para obtener los valores de las otras columnas
-            int capacidadLotes = (int) Tabla_Villas.getValueAt(filaSeleccionada, 2);
-            String seguridad24Hrs = (String) Tabla_Villas.getValueAt(filaSeleccionada, 3);
+            String residencial = (String) Tabla_Villas.getValueAt(filaSeleccionada, 1);
+            String capacidadLotes = (String) Tabla_Villas.getValueAt(filaSeleccionada, 2);
+            String seguridad24Horas = (String) Tabla_Villas.getValueAt(filaSeleccionada, 3);
 
             // Crear y devolver el objeto de la villa seleccionada
-            return new Villa(nombre, Residencial, capacidadLotes, seguridad24Hrs);
+            return new Villa(nombre, residencial, capacidadLotes, seguridad24Horas);
         }
         return null;
     }
@@ -1205,11 +1247,15 @@ public class Empresa_Constructora extends javax.swing.JFrame {
             return;
         }
 
-        // Crear la villa con los valores ingresados
-        Villa villa = new Villa(nombreVilla, residencialPertenencia, capacidadLotes, seguridad24Hr);
+        // Crear un objeto Villa con los datos ingresados
+        Villa v = new Villa(nombreVilla, residencialPertenencia, String.valueOf(capacidadLotes), seguridad24Hr);
 
-        DefaultTableModel model = (DefaultTableModel) Tabla_Villas.getModel();
-        model.addRow(new Object[]{villa.getNombre(), villa.getResidencial(), villa.getCapacidadLotes(), villa.getSeguridad24Horas()});
+        // Agregar la villa a la lista
+        villa.add(v);
+
+        // Agregar los datos a la tabla
+        String[] rowData = {nombreVilla, residencialPertenencia, String.valueOf(capacidadLotes), seguridad24Hr};
+        villaModel.addRow(rowData);
 
         // Mostrar mensaje de éxito
         JOptionPane.showMessageDialog(this, "Villa creada exitosamente");
@@ -1219,32 +1265,60 @@ public class Empresa_Constructora extends javax.swing.JFrame {
         ResidencialPertenencia.setText("");
         CapacidadLotes.setValue(0);
         comboBoxSeguridad24Hr.setSelectedIndex(0);
-
     }//GEN-LAST:event_CREAR_VILLAMouseClicked
 
-    private void jButton7MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton7MouseClicked
-        // TODO add your handling code here:
-        // TODO add your handling code here:
-        Residencial r = new Residencial((String) Name_Residenciales.getText(), (Integer) Año_Fundacion.getValue());
-        residencial.add(r);
-        JOptionPane.showMessageDialog(this, "Creado Exitosamente!");
+    private Villa obtenerVillaPertenencia(String nombreVilla) {
+        for (Villa v : villa) {
+            if (v.getNombre().equals(nombreVilla)) {
+                return v;
+            }
+        }
+        return null;
+    }
+    private void CREAR_APARTAMENTOSMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_CREAR_APARTAMENTOSMouseClicked
+        // Obtener los valores ingresados por el usuario
+        String codigoLote = CodigoLote.getText();
+        Villa villaPertenencia = obtenerVillaPertenencia(VillaPertenencia.getText());
+        int cantidadPisos = (int) CantidadPisos.getValue();
+        Color color = COLOR_ROPA.getBackground();
+        int cuartosFamiliares = (int) CuartosFamiliares.getValue();
+        int cuartosPersonales = (int) CuartosPersonales.getValue();
 
-        int Año = (Integer) Año_Fundacion.getValue();
-        String Nombre_Residencial = Name_Residenciales.getText();
+        // Validar que se haya ingresado un código de lote y que inicie con "AP"
+        if (codigoLote.isEmpty() || !codigoLote.startsWith("AP")) {
+            JOptionPane.showMessageDialog(this, "Ingrese un código de lote válido que inicie con 'AP'", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
 
-        // Crea una lista para almacenar los datos ingresados
-        data = new ArrayList<>();
-        // Agrega los datos a la lista
-        String[] rowData = {String.valueOf(Nombre_Residencial), String.valueOf(Año)};
-        data.add(rowData);
+        // Validar que se haya seleccionado una villa de pertenencia existente
+        if (villaPertenencia == null) {
+            JOptionPane.showMessageDialog(this, "La villa de pertenencia no existe", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
 
-        // Agrega los datos a la tabla
-        residencialModel.addRow(rowData);
+        // Crear el objeto de Apartamento
+        Apartamento apar = new Apartamento(codigoLote, villaPertenencia, cantidadPisos, color, cuartosFamiliares, cuartosPersonales);
 
-        // Limpia los campos de texto después de guardar los datos
-        Name_Residenciales.setText("  ");
+        // Agregar el apartamento a la lista de apartamentos
+        apartamento.add(apar);
 
-    }//GEN-LAST:event_jButton7MouseClicked
+        // Agregar los datos a la tabla de apartamentos
+        String[] rowData = {codigoLote, villaPertenencia.getNombre(), String.valueOf(cantidadPisos),
+            String.valueOf(cuartosFamiliares), String.valueOf(cuartosPersonales)};
+        apartamentoModel.addRow(rowData);
+
+        // Mostrar mensaje de éxito
+        JOptionPane.showMessageDialog(this, "Apartamento creado exitosamente");
+
+        // Limpiar los campos de entrada
+        CodigoLote.setText("");
+        VillaPertenencia.setText("");
+        CantidadPisos.setValue(0);
+        COLOR_ROPA.setBackground(Color.WHITE);
+        CuartosFamiliares.setValue(0);
+        CuartosPersonales.setValue(0);
+
+    }//GEN-LAST:event_CREAR_APARTAMENTOSMouseClicked
 
     private void EDITAR_RESIDENCIALESKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_EDITAR_RESIDENCIALESKeyPressed
 
@@ -1284,8 +1358,8 @@ public class Empresa_Constructora extends javax.swing.JFrame {
         if (villa != null) {
             // Obtener los valores actuales de la villa seleccionada
             String nombreActual = villa.getNombre();
-            String residencialActual = villa.getResidencial();
-            int capacidadLotesActual = villa.getCapacidadLotes();
+            //String residencialActual = villa.getResidencial();
+            int capacidadLotesActual = (int) villa.getCapacidadLotes();
             String seguridadActual = villa.getSeguridad24Horas();
 
             // Mostrar los valores actuales en los campos de edición
@@ -1293,9 +1367,6 @@ public class Empresa_Constructora extends javax.swing.JFrame {
             CapacidadLotes.setValue(capacidadLotesActual);
             comboBoxSeguridad24Hr.setSelectedItem(seguridadActual);
 
-            // Aquí puedes agregar la lógica necesaria para mostrar los campos de edición en tu JFrame
-            // Puedes utilizar el método setVisible(true) para mostrar los componentes
-            // Mostrar mensaje de éxito
             JOptionPane.showMessageDialog(null, "Villa lista para editar");
         } else {
             JOptionPane.showMessageDialog(null, "Selecciona una fila para editar", "Error", JOptionPane.ERROR_MESSAGE);
@@ -1328,6 +1399,108 @@ public class Empresa_Constructora extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Selecciona una fila para eliminar", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_ELIMIAR_VILLAMouseClicked
+
+    private void COLOR_ROPAMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_COLOR_ROPAMouseClicked
+        // TODO add your handling code here:
+        COLOR_ROPA.setBackground(
+                JColorChooser.showDialog(this, "Elige un color", Color.yellow));
+    }//GEN-LAST:event_COLOR_ROPAMouseClicked
+
+    private boolean esVillaExistente(String nombreVilla) {
+        for (Villa v : villa) {
+            if (v.getNombre().equals(nombreVilla)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void CREAR_CASASMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_CREAR_CASASMouseClicked
+// Obtener los valores ingresados por el usuario
+        String codigoLote = CODIGO_CASA.getText();
+        Villa villaPertenencia = obtenerVillaPertenencia(VILLA_P_CASA.getText());
+        int cantidadPisos = (int) PISOS_CASA.getValue();
+        Color color = CasaColor.getBackground();
+        int cuartosPersonales = (int) CUARTOS_P_CASA.getValue();
+
+        // Validar que se haya ingresado un código de lote y que inicie con "AP"
+        if (codigoLote.isEmpty() || !codigoLote.startsWith("CS")) {
+            JOptionPane.showMessageDialog(this, "Ingrese un código de lote válido que inicie con 'CS'", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Validar que se haya seleccionado una villa de pertenencia existente
+        if (villaPertenencia == null) {
+            JOptionPane.showMessageDialog(this, "La villa de pertenencia no existe", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Crear el objeto de Casa
+        Casa cs = new Casa(codigoLote, villaPertenencia, cantidadPisos, color, cuartosPersonales);
+
+        // Agregar la casa a la lista de casas
+        casa.add(cs);
+
+        // Agregar los datos a la tabla de casas
+        String[] rowData = {codigoLote, villaPertenencia.getNombre(), String.valueOf(cantidadPisos), String.valueOf(cuartosPersonales)};
+        casasModel.addRow(rowData);
+
+        // Mostrar mensaje de éxito
+        JOptionPane.showMessageDialog(this, "Casa creada exitosamente");
+
+        // Limpiar los campos de entrada
+        CODIGO_CASA.setText("");
+        VILLA_P_CASA.setText("");
+        PISOS_CASA.setValue(0);
+        CasaColor.setBackground(Color.WHITE);
+        CUARTOS_P_CASA.setValue(0);
+    }//GEN-LAST:event_CREAR_CASASMouseClicked
+
+    private void CREAR_NEGOCIOMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_CREAR_NEGOCIOMouseClicked
+         // Obtener los valores ingresados por el usuario
+    String codigoLote = CODIGO_NEGOCIO.getText();
+    Villa villaPertenencia = obtenerVillaPertenencia(VILLA_P_NEGOCIOS.getText());
+    int cantidadPisos = (int) PISOS_NEGOCIOS.getValue();
+    Color color = COLOR_NEGOCIO.getBackground();
+    LocalTime horaApertura = ((Date) HR_APERTURA.getValue()).toInstant().atZone(ZoneId.systemDefault()).toLocalTime();
+    LocalTime horaCierre = ((Date) HR_CIERRE.getValue()).toInstant().atZone(ZoneId.systemDefault()).toLocalTime();
+
+        // Validar que se haya ingresado un código de lote y que inicie con "AP"
+        if (codigoLote.isEmpty() || !codigoLote.startsWith("NG")) {
+            JOptionPane.showMessageDialog(this, "Ingrese un código de lote válido que inicie con 'NG'", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Validar que se haya seleccionado una villa de pertenencia existente
+        if (villaPertenencia == null) {
+            JOptionPane.showMessageDialog(this, "La villa de pertenencia no existe", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Crear el objeto de Casa
+    Negocio ng = new Negocio(codigoLote, villaPertenencia, cantidadPisos, color, horaApertura, horaCierre);
+
+        // Agregar la casa a la lista de casas
+        negocio.add(ng);
+
+        // Agregar los datos a la tabla de casas
+        String[] rowData = {codigoLote, villaPertenencia.getNombre(), String.valueOf(cantidadPisos),
+            String.valueOf(horaApertura),String.valueOf(horaCierre)};
+        negocioModel.addRow(rowData);
+
+        // Mostrar mensaje de éxito
+        JOptionPane.showMessageDialog(this, "Negocio creado exitosamente");
+
+        // Limpiar los campos de entrada
+        CODIGO_NEGOCIO.setText("");
+        VILLA_P_NEGOCIOS.setText("");
+        PISOS_NEGOCIOS.setValue(0);
+        COLOR_NEGOCIO.setBackground(Color.WHITE);
+        HR_APERTURA.setValue(0);
+        HR_CIERRE.setValue(0);
+
+        
+    }//GEN-LAST:event_CREAR_NEGOCIOMouseClicked
 
     /**
      * @param args the command line arguments
@@ -1375,41 +1548,60 @@ public class Empresa_Constructora extends javax.swing.JFrame {
     ArrayList<Residencial> residencial = new ArrayList();
     ArrayList<Villa> villa = new ArrayList();
     ArrayList<Lote> lotes = new ArrayList();
+    ArrayList<Apartamento> apartamento = new ArrayList();
+    ArrayList<Casa> casa = new ArrayList();
+    ArrayList<Negocio> negocio = new ArrayList();
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private com.toedter.calendar.JYearChooser Año_Fundacion;
-    private javax.swing.JButton COLOR_LOTES1;
-    private javax.swing.JButton COLOR_LOTES2;
-    private javax.swing.JButton COLOR_LOTES3;
+    private javax.swing.JTextField CODIGO_CASA;
+    private javax.swing.JTextField CODIGO_NEGOCIO;
+    private javax.swing.JButton COLOR_NEGOCIO;
+    private javax.swing.JButton COLOR_ROPA;
+    private javax.swing.JButton CREAR_APARTAMENTOS;
+    private javax.swing.JButton CREAR_CASAS;
+    private javax.swing.JButton CREAR_NEGOCIO;
     private javax.swing.JButton CREAR_RESIDENCIALES;
     private javax.swing.JButton CREAR_VILLA;
+    private javax.swing.JSpinner CUARTOS_P_CASA;
+    private javax.swing.JSpinner CantidadPisos;
     private javax.swing.JSpinner CapacidadLotes;
+    private javax.swing.JButton CasaColor;
+    private javax.swing.JTextField CodigoLote;
+    private javax.swing.JSpinner CuartosFamiliares;
+    private javax.swing.JSpinner CuartosPersonales;
     private javax.swing.JButton EDITAR_RESIDENCIALES;
     private javax.swing.JButton EDITAR_VILLA;
     private javax.swing.JButton ELIMIAR_VILLA;
     private javax.swing.JButton ELIMINAR_RESIDENCIAL;
+    private javax.swing.JSpinner HR_APERTURA;
+    private javax.swing.JSpinner HR_CIERRE;
+    private javax.swing.JTable LISTA_APARTAMENTOS;
+    private javax.swing.JTable LISTA_CASAS;
+    private javax.swing.JTable LISTA_NEGOCIO;
     private javax.swing.JTable LISTA_RESIDENCIALES;
     private javax.swing.JTabbedPane LOTES;
     private javax.swing.JTextField Name_Residenciales;
     private javax.swing.JTextField NombreVilla;
+    private javax.swing.JSpinner PISOS_CASA;
+    private javax.swing.JSpinner PISOS_NEGOCIOS;
     private javax.swing.JPanel RESIDENCIALES;
     private javax.swing.JTextField ResidencialPertenencia;
     private javax.swing.JTable Tabla_Villas;
     private javax.swing.JPanel VILLAS;
+    private javax.swing.JTextField VILLA_P_CASA;
+    private javax.swing.JTextField VILLA_P_NEGOCIOS;
+    private javax.swing.JTextField VillaPertenencia;
     private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.JComboBox<String> comboBoxSeguridad24Hr;
     private javax.swing.JButton jButton10;
     private javax.swing.JButton jButton11;
     private javax.swing.JButton jButton12;
     private javax.swing.JButton jButton13;
-    private javax.swing.JButton jButton7;
     private javax.swing.JButton jButton8;
     private javax.swing.JButton jButton9;
-    private javax.swing.JComboBox<String> jComboBox5;
-    private javax.swing.JComboBox<String> jComboBox6;
-    private javax.swing.JComboBox<String> jComboBox7;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel14;
-    private javax.swing.JLabel jLabel15;
     private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel17;
     private javax.swing.JLabel jLabel18;
@@ -1418,7 +1610,6 @@ public class Empresa_Constructora extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel20;
     private javax.swing.JLabel jLabel21;
     private javax.swing.JLabel jLabel22;
-    private javax.swing.JLabel jLabel23;
     private javax.swing.JLabel jLabel24;
     private javax.swing.JLabel jLabel25;
     private javax.swing.JLabel jLabel26;
@@ -1426,7 +1617,6 @@ public class Empresa_Constructora extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel28;
     private javax.swing.JLabel jLabel29;
     private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel30;
     private javax.swing.JLabel jLabel31;
     private javax.swing.JLabel jLabel32;
     private javax.swing.JLabel jLabel33;
@@ -1459,24 +1649,7 @@ public class Empresa_Constructora extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane7;
     private javax.swing.JScrollPane jScrollPane8;
     private javax.swing.JScrollPane jScrollPane9;
-    private javax.swing.JSpinner jSpinner10;
-    private javax.swing.JSpinner jSpinner2;
-    private javax.swing.JSpinner jSpinner3;
-    private javax.swing.JSpinner jSpinner4;
-    private javax.swing.JSpinner jSpinner6;
-    private javax.swing.JSpinner jSpinner7;
-    private javax.swing.JSpinner jSpinner8;
-    private javax.swing.JSpinner jSpinner9;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JTabbedPane jTabbedPane2;
-    private javax.swing.JTable jTable3;
-    private javax.swing.JTable jTable4;
-    private javax.swing.JTable jTable5;
-    private javax.swing.JTextField jTextField4;
-    private javax.swing.JTextField jTextField5;
-    private javax.swing.JTextField jTextField6;
-    private javax.swing.JTextField jTextField7;
-    private javax.swing.JTextField jTextField8;
-    private javax.swing.JTextField jTextField9;
     // End of variables declaration//GEN-END:variables
 }
