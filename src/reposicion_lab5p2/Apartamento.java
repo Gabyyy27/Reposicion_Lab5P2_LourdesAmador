@@ -5,6 +5,8 @@
  */
 package reposicion_lab5p2;
 
+import java.awt.Color;
+
 /**
  *
  * @author Lourdes
@@ -14,7 +16,7 @@ public class Apartamento extends Lote {
     private int cuartosPersonales;
 
     // Constructor
-    public Apartamento(String codigoLote, Villa villaPertenencia, int cantidadPisos, String color,
+    public Apartamento(String codigoLote, Villa villaPertenencia, int cantidadPisos, Color color,
             int cuartosFamiliares, int cuartosPersonales) {
         super(codigoLote, villaPertenencia, cantidadPisos, color);
         this.cuartosFamiliares = cuartosFamiliares;

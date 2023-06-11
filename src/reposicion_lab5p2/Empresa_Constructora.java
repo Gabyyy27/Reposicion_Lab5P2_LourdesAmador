@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import javax.swing.DefaultListModel;
 import javax.swing.JColorChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JSpinner;
@@ -33,9 +34,9 @@ public class Empresa_Constructora extends javax.swing.JFrame {
     private DefaultTableModel apartamentoModel;
     private DefaultTableModel casasModel;
     private DefaultTableModel negocioModel;
+    // private DefaultTableModel horaAperturaModelModel;
     private JSpinner spinnerHoraApertura;
     private JSpinner spinnerHoraCierre;
-
 
     /**
      * Creates new form Empresa_Constructora
@@ -43,7 +44,28 @@ public class Empresa_Constructora extends javax.swing.JFrame {
     public Empresa_Constructora() {
         initComponents();
 
-         initializeSpinners();
+        // Crear el modelo de la JList y asignarlo
+        DefaultListModel<String> listModel = new DefaultListModel<>();
+        DefaultListModel<String> listVModel = new DefaultListModel<>();
+        DefaultListModel<String> listLModel = new DefaultListModel<>();
+        DefaultListModel<String> listCModel = new DefaultListModel<>();
+        JList_VillasC.setModel(listCModel);
+        DefaultListModel<String> listNModel = new DefaultListModel<>();
+        JList_VillasN.setModel(listNModel);
+        JList_Residenciales.setModel(listModel);
+        JList_Villas.setModel(listVModel);
+        DefaultListModel<String> listAPModel = new DefaultListModel<>();
+        JList_VillasAP.setModel(listAPModel);
+        JList_Lotes.setModel(listLModel);
+
+        spinnerHoraApertura = new JSpinner(new SpinnerDateModel());
+        spinnerHoraCierre = new JSpinner(new SpinnerDateModel());
+
+        JSpinner.DateEditor horaAperturaEditor = new JSpinner.DateEditor(spinnerHoraApertura, "HH:mm");
+        JSpinner.DateEditor horaCierreEditor = new JSpinner.DateEditor(spinnerHoraCierre, "HH:mm");
+        spinnerHoraApertura.setEditor(horaAperturaEditor);
+        spinnerHoraCierre.setEditor(horaCierreEditor);
+        initializeSpinners();
         residencialModel = new DefaultTableModel();
         residencialModel.addColumn("NOMBRE");
         residencialModel.addColumn("AÑO DE FUNDACION");
@@ -179,16 +201,9 @@ public class Empresa_Constructora extends javax.swing.JFrame {
                 }
             }
         });
-        
-        spinnerHoraApertura = new JSpinner(new SpinnerDateModel());
-        spinnerHoraCierre = new JSpinner(new SpinnerDateModel());
-
-        JSpinner.DateEditor horaAperturaEditor = new JSpinner.DateEditor(spinnerHoraApertura, "HH:mm");
-        JSpinner.DateEditor horaCierreEditor = new JSpinner.DateEditor(spinnerHoraCierre, "HH:mm");
-        spinnerHoraApertura.setEditor(horaAperturaEditor);
-        spinnerHoraCierre.setEditor(horaCierreEditor);
 
     }
+
     private void initializeSpinners() {
         // Configurar los valores mínimos y máximos del JSpinner
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
@@ -221,9 +236,9 @@ public class Empresa_Constructora extends javax.swing.JFrame {
         Año_Fundacion = new com.toedter.calendar.JYearChooser();
         CREAR_RESIDENCIALES = new javax.swing.JButton();
         jScrollPane2 = new javax.swing.JScrollPane();
-        jList1 = new javax.swing.JList<>();
+        JList_Villas = new javax.swing.JList<>();
         jScrollPane3 = new javax.swing.JScrollPane();
-        jList2 = new javax.swing.JList<>();
+        JList_Lotes = new javax.swing.JList<>();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         VILLAS = new javax.swing.JPanel();
@@ -238,7 +253,7 @@ public class Empresa_Constructora extends javax.swing.JFrame {
         Tabla_Villas = new javax.swing.JTable();
         jLabel9 = new javax.swing.JLabel();
         jScrollPane5 = new javax.swing.JScrollPane();
-        jList3 = new javax.swing.JList<>();
+        JList_Residenciales = new javax.swing.JList<>();
         EDITAR_VILLA = new javax.swing.JButton();
         ELIMIAR_VILLA = new javax.swing.JButton();
         CREAR_VILLA = new javax.swing.JButton();
@@ -259,7 +274,7 @@ public class Empresa_Constructora extends javax.swing.JFrame {
         jLabel27 = new javax.swing.JLabel();
         jLabel36 = new javax.swing.JLabel();
         jScrollPane8 = new javax.swing.JScrollPane();
-        jList6 = new javax.swing.JList<>();
+        JList_VillasAP = new javax.swing.JList<>();
         jScrollPane9 = new javax.swing.JScrollPane();
         LISTA_APARTAMENTOS = new javax.swing.JTable();
         CREAR_APARTAMENTOS = new javax.swing.JButton();
@@ -279,7 +294,7 @@ public class Empresa_Constructora extends javax.swing.JFrame {
         CUARTOS_P_CASA = new javax.swing.JSpinner();
         jLabel35 = new javax.swing.JLabel();
         jScrollPane7 = new javax.swing.JScrollPane();
-        jList5 = new javax.swing.JList<>();
+        JList_VillasC = new javax.swing.JList<>();
         jScrollPane10 = new javax.swing.JScrollPane();
         LISTA_CASAS = new javax.swing.JTable();
         jButton10 = new javax.swing.JButton();
@@ -298,7 +313,7 @@ public class Empresa_Constructora extends javax.swing.JFrame {
         jLabel20 = new javax.swing.JLabel();
         jLabel34 = new javax.swing.JLabel();
         jScrollPane6 = new javax.swing.JScrollPane();
-        jList4 = new javax.swing.JList<>();
+        JList_VillasN = new javax.swing.JList<>();
         jScrollPane11 = new javax.swing.JScrollPane();
         LISTA_NEGOCIO = new javax.swing.JTable();
         jButton12 = new javax.swing.JButton();
@@ -378,10 +393,10 @@ public class Empresa_Constructora extends javax.swing.JFrame {
             }
         });
 
-        jList1.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
-        jScrollPane2.setViewportView(jList1);
+        JList_Villas.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        jScrollPane2.setViewportView(JList_Villas);
 
-        jScrollPane3.setViewportView(jList2);
+        jScrollPane3.setViewportView(JList_Lotes);
 
         jLabel3.setText("VILLAS");
 
@@ -450,13 +465,12 @@ public class Empresa_Constructora extends javax.swing.JFrame {
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
                 .addGap(36, 36, 36)
                 .addComponent(jLabel4)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(RESIDENCIALESLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(RESIDENCIALESLayout.createSequentialGroup()
-                        .addGap(18, 18, 18)
                         .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 67, Short.MAX_VALUE))
+                        .addGap(0, 79, Short.MAX_VALUE))
                     .addGroup(RESIDENCIALESLayout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(RESIDENCIALESLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(EDITAR_RESIDENCIALES, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(ELIMINAR_RESIDENCIAL, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -520,8 +534,8 @@ public class Empresa_Constructora extends javax.swing.JFrame {
 
         jLabel9.setText("RESIDENCIALES");
 
-        jList3.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
-        jScrollPane5.setViewportView(jList3);
+        JList_Residenciales.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        jScrollPane5.setViewportView(JList_Residenciales);
 
         EDITAR_VILLA.setText("EDITAR");
         EDITAR_VILLA.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -648,8 +662,8 @@ public class Empresa_Constructora extends javax.swing.JFrame {
 
         jLabel36.setText("VILLAS");
 
-        jList6.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
-        jScrollPane8.setViewportView(jList6);
+        JList_VillasAP.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        jScrollPane8.setViewportView(JList_VillasAP);
 
         LISTA_APARTAMENTOS.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -814,8 +828,8 @@ public class Empresa_Constructora extends javax.swing.JFrame {
 
         jLabel35.setText("VILLAS");
 
-        jList5.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
-        jScrollPane7.setViewportView(jList5);
+        JList_VillasC.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        jScrollPane7.setViewportView(JList_VillasC);
 
         LISTA_CASAS.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -882,8 +896,8 @@ public class Empresa_Constructora extends javax.swing.JFrame {
                         .addGap(160, 160, 160)
                         .addComponent(jButton11, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jLabel35)
-                    .addComponent(jScrollPane7, javax.swing.GroupLayout.PREFERRED_SIZE, 178, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jScrollPane10, javax.swing.GroupLayout.PREFERRED_SIZE, 440, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jScrollPane10, javax.swing.GroupLayout.PREFERRED_SIZE, 440, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jScrollPane7, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(36, 36, 36))
         );
         jPanel4Layout.setVerticalGroup(
@@ -960,8 +974,8 @@ public class Empresa_Constructora extends javax.swing.JFrame {
 
         jLabel34.setText("VILLAS");
 
-        jList4.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
-        jScrollPane6.setViewportView(jList4);
+        JList_VillasN.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        jScrollPane6.setViewportView(JList_VillasN);
 
         LISTA_NEGOCIO.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -1047,7 +1061,7 @@ public class Empresa_Constructora extends javax.swing.JFrame {
                                         .addGap(84, 84, 84))
                                     .addGroup(jPanel2Layout.createSequentialGroup()
                                         .addGap(100, 100, 100)
-                                        .addComponent(jScrollPane6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                                        .addComponent(jScrollPane6, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)))))
                         .addContainerGap(36, Short.MAX_VALUE))))
         );
         jPanel2Layout.setVerticalGroup(
@@ -1156,9 +1170,12 @@ public class Empresa_Constructora extends javax.swing.JFrame {
 
         // Agrega los datos a la tabla
         residencialModel.addRow(rowData);
+        // Agrega el nombre de la residencial a la JList
+        DefaultListModel<String> listModel = (DefaultListModel<String>) JList_Residenciales.getModel();
+        listModel.addElement(Nombre_Residencial);
 
         // Limpia los campos de texto después de guardar los datos
-        Name_Residenciales.setText("  ");
+        Name_Residenciales.setText("");
 
 
     }//GEN-LAST:event_CREAR_RESIDENCIALESMouseClicked
@@ -1259,6 +1276,15 @@ public class Empresa_Constructora extends javax.swing.JFrame {
 
         // Mostrar mensaje de éxito
         JOptionPane.showMessageDialog(this, "Villa creada exitosamente");
+        // Agrega el nombre de la residencial a la JList
+        DefaultListModel<String> listVModel = (DefaultListModel<String>) JList_Villas.getModel();
+        DefaultListModel<String> listAPModel = (DefaultListModel<String>) JList_VillasAP.getModel();
+        DefaultListModel<String> listCModel = (DefaultListModel<String>) JList_VillasC.getModel();
+        DefaultListModel<String> listNModel = (DefaultListModel<String>) JList_VillasN.getModel();
+        listVModel.addElement(nombreVilla);
+        listAPModel.addElement(nombreVilla);
+        listCModel.addElement(nombreVilla);
+        listNModel.addElement(nombreVilla);
 
         // Limpiar los campos de entrada
         NombreVilla.setText("");
@@ -1309,6 +1335,8 @@ public class Empresa_Constructora extends javax.swing.JFrame {
 
         // Mostrar mensaje de éxito
         JOptionPane.showMessageDialog(this, "Apartamento creado exitosamente");
+        DefaultListModel<String> listLModel = (DefaultListModel<String>) JList_Lotes.getModel();
+        listLModel.addElement(codigoLote);
 
         // Limpiar los campos de entrada
         CodigoLote.setText("");
@@ -1447,6 +1475,8 @@ public class Empresa_Constructora extends javax.swing.JFrame {
 
         // Mostrar mensaje de éxito
         JOptionPane.showMessageDialog(this, "Casa creada exitosamente");
+        DefaultListModel<String> listLModel = (DefaultListModel<String>) JList_Lotes.getModel();
+        listLModel.addElement(codigoLote);
 
         // Limpiar los campos de entrada
         CODIGO_CASA.setText("");
@@ -1457,13 +1487,16 @@ public class Empresa_Constructora extends javax.swing.JFrame {
     }//GEN-LAST:event_CREAR_CASASMouseClicked
 
     private void CREAR_NEGOCIOMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_CREAR_NEGOCIOMouseClicked
-         // Obtener los valores ingresados por el usuario
-    String codigoLote = CODIGO_NEGOCIO.getText();
-    Villa villaPertenencia = obtenerVillaPertenencia(VILLA_P_NEGOCIOS.getText());
-    int cantidadPisos = (int) PISOS_NEGOCIOS.getValue();
-    Color color = COLOR_NEGOCIO.getBackground();
-    LocalTime horaApertura = ((Date) HR_APERTURA.getValue()).toInstant().atZone(ZoneId.systemDefault()).toLocalTime();
-    LocalTime horaCierre = ((Date) HR_CIERRE.getValue()).toInstant().atZone(ZoneId.systemDefault()).toLocalTime();
+        // Obtener los valores ingresados por el usuario
+        String codigoLote = CODIGO_NEGOCIO.getText();
+        Villa villaPertenencia = obtenerVillaPertenencia(VILLA_P_NEGOCIOS.getText());
+        int cantidadPisos = (int) PISOS_NEGOCIOS.getValue();
+        Color color = COLOR_NEGOCIO.getBackground();
+        Date horaAperturaDate = (Date) HR_APERTURA.getValue();
+        Date horaCierreDate = (Date) HR_CIERRE.getValue();
+
+        LocalTime horaApertura = horaAperturaDate.toInstant().atZone(ZoneId.systemDefault()).toLocalTime();
+        LocalTime horaCierre = horaCierreDate.toInstant().atZone(ZoneId.systemDefault()).toLocalTime();
 
         // Validar que se haya ingresado un código de lote y que inicie con "AP"
         if (codigoLote.isEmpty() || !codigoLote.startsWith("NG")) {
@@ -1478,18 +1511,20 @@ public class Empresa_Constructora extends javax.swing.JFrame {
         }
 
         // Crear el objeto de Casa
-    Negocio ng = new Negocio(codigoLote, villaPertenencia, cantidadPisos, color, horaApertura, horaCierre);
+        Negocio ng = new Negocio(codigoLote, villaPertenencia, cantidadPisos, color, horaApertura, horaCierre);
 
         // Agregar la casa a la lista de casas
         negocio.add(ng);
 
         // Agregar los datos a la tabla de casas
         String[] rowData = {codigoLote, villaPertenencia.getNombre(), String.valueOf(cantidadPisos),
-            String.valueOf(horaApertura),String.valueOf(horaCierre)};
+            String.valueOf(horaApertura), String.valueOf(horaCierre)};
         negocioModel.addRow(rowData);
 
         // Mostrar mensaje de éxito
         JOptionPane.showMessageDialog(this, "Negocio creado exitosamente");
+        DefaultListModel<String> listLModel = (DefaultListModel<String>) JList_Lotes.getModel();
+        listLModel.addElement(codigoLote);
 
         // Limpiar los campos de entrada
         CODIGO_NEGOCIO.setText("");
@@ -1499,7 +1534,7 @@ public class Empresa_Constructora extends javax.swing.JFrame {
         HR_APERTURA.setValue(0);
         HR_CIERRE.setValue(0);
 
-        
+
     }//GEN-LAST:event_CREAR_NEGOCIOMouseClicked
 
     /**
@@ -1575,6 +1610,12 @@ public class Empresa_Constructora extends javax.swing.JFrame {
     private javax.swing.JButton ELIMINAR_RESIDENCIAL;
     private javax.swing.JSpinner HR_APERTURA;
     private javax.swing.JSpinner HR_CIERRE;
+    private javax.swing.JList<String> JList_Lotes;
+    private javax.swing.JList<String> JList_Residenciales;
+    private javax.swing.JList<String> JList_Villas;
+    private javax.swing.JList<String> JList_VillasAP;
+    private javax.swing.JList<String> JList_VillasC;
+    private javax.swing.JList<String> JList_VillasN;
     private javax.swing.JTable LISTA_APARTAMENTOS;
     private javax.swing.JTable LISTA_CASAS;
     private javax.swing.JTable LISTA_NEGOCIO;
@@ -1629,12 +1670,6 @@ public class Empresa_Constructora extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
-    private javax.swing.JList<String> jList1;
-    private javax.swing.JList<String> jList2;
-    private javax.swing.JList<String> jList3;
-    private javax.swing.JList<String> jList4;
-    private javax.swing.JList<String> jList5;
-    private javax.swing.JList<String> jList6;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel4;

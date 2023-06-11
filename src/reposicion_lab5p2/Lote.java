@@ -5,6 +5,8 @@
  */
 package reposicion_lab5p2;
 
+import java.awt.Color;
+
 /**
  *
  * @author Lourdes
@@ -13,10 +15,10 @@ public abstract class Lote {
     private String codigoLote;
     private Villa villaPertenencia;
     private int cantidadPisos;
-    private String color;
+    private Color color;
 
     // Constructor
-    public Lote(String codigoLote, Villa villaPertenencia, int cantidadPisos, String color) {
+    public Lote(String codigoLote, Villa villaPertenencia, int cantidadPisos, Color color) {
         this.codigoLote = codigoLote;
         this.villaPertenencia = villaPertenencia;
         this.cantidadPisos = cantidadPisos;
@@ -36,8 +38,12 @@ public abstract class Lote {
         return cantidadPisos;
     }
 
-    public String getColor() {
+    public Color getColor() {
         return color;
+    }
+
+    public void setColor(Color color) {
+        this.color = color;
     }
     
 }

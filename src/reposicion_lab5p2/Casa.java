@@ -5,6 +5,8 @@
  */
 package reposicion_lab5p2;
 
+import java.awt.Color;
+
 /**
  *
  * @author Lourdes
@@ -13,7 +15,7 @@ public class Casa extends Lote {
     private int cuartosPersonales;
 
     // Constructor
-    public Casa(String codigoLote, Villa villaPertenencia, int cantidadPisos, String color, int cuartosPersonales) {
+    public Casa(String codigoLote, Villa villaPertenencia, int cantidadPisos, Color color, int cuartosPersonales) {
         super(codigoLote, villaPertenencia, cantidadPisos, color);
         this.cuartosPersonales = cuartosPersonales;
     }

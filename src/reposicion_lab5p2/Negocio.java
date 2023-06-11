@@ -5,6 +5,7 @@
  */
 package reposicion_lab5p2;
 
+import java.awt.Color;
 import java.time.LocalTime;
 
 /**
@@ -16,7 +17,7 @@ public  class Negocio extends Lote {
     private LocalTime horaCierre;
 
     // Constructor
-    public Negocio(String codigoLote, Villa villaPertenencia, int cantidadPisos, String color,
+    public Negocio(String codigoLote, Villa villaPertenencia, int cantidadPisos, Color color,
             LocalTime horaApertura, LocalTime horaCierre) {
         super(codigoLote, villaPertenencia, cantidadPisos, color);
         this.horaApertura = horaApertura;
